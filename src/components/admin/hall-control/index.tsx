@@ -1,8 +1,8 @@
 import {useAppDispatch, useAppSelector} from "../../../hooks";
-import {useEffect} from "react";
+import {MouseEvent, useEffect} from "react";
 import {Spinner} from "../../spinner/Spinner";
 import {Error} from "../../error/Error";
-import {fetchHalls, hallsState} from "../../../slices/halls";
+import {fetchHalls, deleteHall, hallsState} from "../../../slices/halls";
 import styles from "../styles.module.scss"
 
 export function HallControl() {
@@ -10,6 +10,11 @@ export function HallControl() {
     useEffect(() => {
         dispatch(fetchHalls())
     }, []) //mounted
+    const onDeleteButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        const hallId = Number(event.currentTarget.dataset["id"]);
+        dispatch(deleteHall(hallId))
+    }
     const {loading, data: halls, error} = useAppSelector(hallsState);
     return loading
         ? (<Spinner/>)
@@ -19,7 +24,9 @@ export function HallControl() {
                 <ul className={styles["conf-step__list"]}>
                     {halls.map(hall => (
                         <li>{hall.name} <span> </span>
-                            <button className={styles["conf-step__button"] + " " + styles["conf-step__button-trash"]}></button>
+                            <button className={styles["conf-step__button"] + " " + styles["conf-step__button-trash"]}
+                                onClick={onDeleteButtonClick}
+                                data-id={hall.id}></button>
                         </li>
                     ))}
                 </ul>

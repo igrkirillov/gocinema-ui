@@ -1,6 +1,6 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Hall, HallsState} from "../../types";
-import config from "../../../config/app.json"
+import {deleteHallById, getAllHalls} from "../../serverApi";
 
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
@@ -23,14 +23,33 @@ export const hallsSlice = createSliceWithThunk({
         fetchHalls: create.asyncThunk<Hall[]>(
             async  (__, thunkApi) => {
                 try {
-                    const response = await fetch(config.serverUrl + "/halls", {method: "GET"});
-                    if (response.ok) {
-                        return await response.json() as Hall[];
-                    } else {
-                        return thunkApi.rejectWithValue(response.statusText);
-                    }
+                    return await getAllHalls();
                 } catch (e) {
-                    return thunkApi.rejectWithValue(e);
+                    return thunkApi.rejectWithValue((e as Error).message);
+                }
+            },
+            {
+                pending: (state) => {
+                    state.loading = true;
+                    state.error = null;
+                },
+                fulfilled: (state, action: PayloadAction<Hall[]>) => {
+                    state.data = action.payload ? action.payload : [] as Hall[];
+                },
+                rejected: (state, action) => {
+                    state.error = action.payload as string;
+                },
+                settled: (state) => {
+                    state.loading = false;
+                }
+            }),
+        deleteHall: create.asyncThunk<Hall[], number>(
+            async  (hallId, thunkApi) => {
+                try {
+                    await deleteHallById(hallId);
+                    return await getAllHalls();
+                } catch (e) {
+                    return thunkApi.rejectWithValue((e as Error).message);
                 }
             },
             {
@@ -51,5 +70,5 @@ export const hallsSlice = createSliceWithThunk({
     })
 })
 
-export const {fetchHalls} = hallsSlice.actions;
+export const {fetchHalls, deleteHall} = hallsSlice.actions;
 export const {halls, hallsState} = hallsSlice.selectors;
