@@ -10,7 +10,6 @@ export function Movies() {
         dispatch(fetchUsers())
     }, []) //mounted
     const {loading, users, error} = useAppSelector(usersState);
-    console.log(users);
     return loading
         ? (<Spinner/>)
         : (error ? (<Error error={error}/>) : (<span>{JSON.stringify(users)}</span>))
