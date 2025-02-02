@@ -6,11 +6,13 @@ export type Movie = {
     releaseDate: string
 }
 
-export type MoviesState = {
-    movies: Movie[],
+type ArrayDataState<T> = {
+    data: T[],
     loading: boolean,
     error: string | null
 }
+
+export type MoviesState = ArrayDataState<Movie>
 
 export type User = {
     id: number
@@ -18,8 +20,13 @@ export type User = {
     role: string
 }
 
-export type UsersState = {
-    users: User[],
-    loading: boolean,
-    error: string | null
+export type UsersState = ArrayDataState<User>
+
+export type Hall = {
+    id: number
+    name: string,
+    cols: number,
+    rows: number
 }
+
+export type HallsState = ArrayDataState<Hall>

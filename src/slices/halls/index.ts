@@ -1,5 +1,5 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {Movie, MoviesState} from "../../types";
+import {Hall, HallsState} from "../../types";
 import config from "../../../config/app.json"
 
 const createSliceWithThunk = buildCreateSlice({
@@ -10,21 +10,22 @@ const initialState = {
     data: [],
     loading: false,
     error: null
-} as MoviesState;
+} as HallsState;
 
-export const moviesSlice = createSliceWithThunk({
-    name: "movies",
+export const hallsSlice = createSliceWithThunk({
+    name: "halls",
     initialState,
     selectors: {
-        moviesState: (state) => state
+        halls: (state) => state.data,
+        hallsState: (state) => state
     },
     reducers: (create) => ({
-        fetchMovies: create.asyncThunk<Movie[]>(
+        fetchHalls: create.asyncThunk<Hall[]>(
             async  (__, thunkApi) => {
                 try {
-                    const response = await fetch(config.serverUrl + "/movies", {method: "GET"});
+                    const response = await fetch(config.serverUrl + "/halls", {method: "GET"});
                     if (response.ok) {
-                        return (await response.json()) as Movie[];
+                        return await response.json() as Hall[];
                     } else {
                         return thunkApi.rejectWithValue(response.statusText);
                     }
@@ -37,8 +38,8 @@ export const moviesSlice = createSliceWithThunk({
                     state.loading = true;
                     state.error = null;
                 },
-                fulfilled: (state, action: PayloadAction<Movie[]>) => {
-                    state.data = action.payload ? action.payload : [];
+                fulfilled: (state, action: PayloadAction<Hall[]>) => {
+                    state.data = action.payload ? action.payload : [] as Hall[];
                 },
                 rejected: (state, action) => {
                     state.error = action.payload as string;
@@ -50,5 +51,5 @@ export const moviesSlice = createSliceWithThunk({
     })
 })
 
-export const {fetchMovies} = moviesSlice.actions;
-export const {moviesState} = moviesSlice.selectors;
+export const {fetchHalls} = hallsSlice.actions;
+export const {halls, hallsState} = hallsSlice.selectors;

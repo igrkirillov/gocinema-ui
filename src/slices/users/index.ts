@@ -7,7 +7,7 @@ const createSliceWithThunk = buildCreateSlice({
 })
 
 const initialState = {
-    users: {},
+    data: [],
     loading: false,
     error: null
 } as UsersState;
@@ -16,13 +16,12 @@ export const usersSlice = createSliceWithThunk({
     name: "users",
     initialState,
     selectors: {
-        users: (state) => state.users,
+        users: (state) => state.data,
         usersState: (state) => state
     },
     reducers: (create) => ({
         fetchUsers: create.asyncThunk<User[]>(
             async  (__, thunkApi) => {
-                console.log("fetchUsers")
                 try {
                     const response = await fetch(config.serverUrl + "/users", {method: "GET"});
                     if (response.ok) {
@@ -40,7 +39,7 @@ export const usersSlice = createSliceWithThunk({
                     state.error = null;
                 },
                 fulfilled: (state, action: PayloadAction<User[]>) => {
-                    state.users = action.payload ? action.payload : {} as User[];
+                    state.data = action.payload ? action.payload : [] as User[];
                 },
                 rejected: (state, action) => {
                     state.error = action.payload as string;

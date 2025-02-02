@@ -9,7 +9,7 @@ export function Movies() {
     useEffect(() => {
         dispatch(fetchUsers())
     }, []) //mounted
-    const {loading, users, error} = useAppSelector(usersState);
+    const {loading, data: users, error} = useAppSelector(usersState);
     return loading
         ? (<Spinner/>)
         : (error ? (<Error error={error}/>) : (<span>{JSON.stringify(users)}</span>))

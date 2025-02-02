@@ -2,6 +2,7 @@ import {Header} from "./header";
 import "./styles.module.scss"
 import {Main} from "./main";
 import {Step} from "./step";
+import {HallControl} from "./hall-control";
 
 export function Admin() {
     return (
@@ -9,7 +10,7 @@ export function Admin() {
             <Header></Header>
             <Main>
                 <Step title="Управление залами">
-                    <span>Text</span>
+                    <HallControl></HallControl>
                 </Step>
                 <Step title="Конфигурация залов">
                     <span>Text</span>
