@@ -18,7 +18,8 @@ export async function deleteHallById(hallId: number) {
 }
 
 export async function createNextHall(allHalls: Hall[]): Promise<Hall> {
-    const maxNumber = allHalls.map(h => h.id).reduce((prev, current) => Math.max(prev, current), 0);
+    const maxNumber = allHalls.map(h => Number(h.name.substring(4, h.name.length)))
+        .reduce((prev, current) => Math.max(prev, current), 0);
     const response = await fetch(config.serverUrl + "/halls",
         {
                 method: "POST",

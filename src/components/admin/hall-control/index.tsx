@@ -1,13 +1,12 @@
 import {useAppDispatch, useAppSelector} from "../../../hooks";
 import {MouseEvent, useEffect} from "react";
-import {Spinner} from "../../spinner/Spinner";
 import {Error} from "../../error/Error";
-import {fetchHalls, deleteHall, hallsState, createNewHall} from "../../../slices/halls";
+import {createNewHall, deleteHall, fetchHalls, hallsState} from "../../../slices/halls";
 import styles from "../styles.module.scss"
 
 export function HallControl() {
     const dispatch = useAppDispatch();
-    const {loading, data: halls, error} = useAppSelector(hallsState);
+    const {data: halls, error} = useAppSelector(hallsState);
     useEffect(() => {
         dispatch(fetchHalls())
     }, []) //mounted
@@ -20,14 +19,12 @@ export function HallControl() {
         event.preventDefault();
         dispatch(createNewHall(halls));
     }
-    return loading
-        ? (<Spinner/>)
-        : (error ? (<Error error={error}/>) : (
+    return error ? (<Error error={error}/>) : (
             <>
                 <p className={styles["conf-step__paragraph"]}>Доступные залы:</p>
                 <ul className={styles["conf-step__list"]}>
                     {halls.map(hall => (
-                        <li>{hall.name} <span> </span>
+                        <li key={hall.id}>{hall.name} <span> </span>
                             <button className={styles["conf-step__button"] + " " + styles["conf-step__button-trash"]}
                                 onClick={onDeleteButtonClick}
                                 data-id={hall.id}></button>
@@ -37,5 +34,5 @@ export function HallControl() {
                 <button className={styles["conf-step__button"] + " " + styles["conf-step__button-accent"]}
                     onClick={onCreateButtonClick}>Создать зал</button>
             </>
-        ));
+        );
 }
