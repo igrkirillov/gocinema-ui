@@ -30,3 +30,9 @@ export type Hall = {
 }
 
 export type HallsState = ArrayDataState<Hall>
+
+export type HallParameters = {
+    name: string,
+    rows: number,
+    cols: number
+}

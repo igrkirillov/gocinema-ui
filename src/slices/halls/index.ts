@@ -1,6 +1,6 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Hall, HallsState} from "../../types";
-import {deleteHallById, getAllHalls} from "../../serverApi";
+import {createNextHall, deleteHallById, getAllHalls} from "../../serverApi";
 
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
@@ -66,9 +66,33 @@ export const hallsSlice = createSliceWithThunk({
                 settled: (state) => {
                     state.loading = false;
                 }
+            }),
+        createNewHall: create.asyncThunk<Hall[], Hall[]>(
+            async  (allHalls, thunkApi) => {
+                try {
+                    await createNextHall(allHalls);
+                    return await getAllHalls();
+                } catch (e) {
+                    return thunkApi.rejectWithValue((e as Error).message);
+                }
+            },
+            {
+                pending: (state) => {
+                    state.loading = true;
+                    state.error = null;
+                },
+                fulfilled: (state, action: PayloadAction<Hall[]>) => {
+                    state.data = action.payload ? action.payload : [] as Hall[];
+                },
+                rejected: (state, action) => {
+                    state.error = action.payload as string;
+                },
+                settled: (state) => {
+                    state.loading = false;
+                }
             })
     })
 })
 
-export const {fetchHalls, deleteHall} = hallsSlice.actions;
+export const {fetchHalls, deleteHall, createNewHall} = hallsSlice.actions;
 export const {halls, hallsState} = hallsSlice.selectors;
