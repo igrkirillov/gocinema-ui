@@ -3,6 +3,7 @@ import "./styles.module.scss"
 import {Main} from "./main";
 import {Step} from "./step";
 import {HallControl} from "./hall-control";
+import {HallConfig} from "./hall-config";
 
 export function Admin() {
     return (
@@ -13,7 +14,7 @@ export function Admin() {
                     <HallControl></HallControl>
                 </Step>
                 <Step title="Конфигурация залов">
-                    <span>Text</span>
+                    <HallConfig></HallConfig>
                 </Step>
                 <Step title="Конфигурация цен">
                     <span>Text</span>
