@@ -1,10 +1,9 @@
 import {useAppDispatch, useAppSelector} from "../../../hooks";
-import {ChangeEvent, useEffect, useState, MouseEvent} from "react";
+import {ChangeEvent, MouseEvent, useEffect, useState} from "react";
 import {Error} from "../../error/Error";
 import {cancelCurrentHall, hallsState, saveCurrentHall, updateCurrentHall} from "../../../slices/halls";
 import styles from "../styles.module.scss"
 import "../normalize.css"
-import {HallPlaces} from "../hall-places";
 import {CurrentHall} from "../../../data/CurrentHall";
 
 export function HallConfig() {
@@ -29,15 +28,17 @@ export function HallConfig() {
     const onHallRowsChange = (event: ChangeEvent<HTMLInputElement>) => {
         if (currentHall) {
             currentHall.rows = Number(event.currentTarget.value);
-            setCurrentHall(currentHall.copy().refill());
-            dispatch(updateCurrentHall(currentHall));
+            const newCurrentHall = currentHall.copy().refill();
+            setCurrentHall(newCurrentHall);
+            dispatch(updateCurrentHall(newCurrentHall));
         }
     }
     const onHallColsChange = (event: ChangeEvent<HTMLInputElement>) => {
         if (currentHall) {
             currentHall.cols = Number(event.currentTarget.value);
-            setCurrentHall(currentHall.copy().refill());
-            dispatch(updateCurrentHall(currentHall));
+            const newCurrentHall = currentHall.copy().refill();
+            setCurrentHall(newCurrentHall);
+            dispatch(updateCurrentHall(newCurrentHall));
         }
     }
     const onSaveClick = (event: MouseEvent<HTMLInputElement>) => {
@@ -51,6 +52,26 @@ export function HallConfig() {
             event.preventDefault();
             dispatch(cancelCurrentHall(currentHall));
             setCurrentHall(new CurrentHall(halls.find(h => h.id === currentHall.id) ?? null));
+        }
+    }
+    const onPlaceClick = (event: MouseEvent<HTMLSpanElement>) => {
+        event.preventDefault();
+        const row = Number(event.currentTarget.dataset["row"]);
+        const col = Number(event.currentTarget.dataset["col"]);
+        let newCurrentHall;
+        if (currentHall && isStandard(row, col, currentHall)) {
+            // из станд в вип
+            newCurrentHall = currentHall.copy().setVipPlace(row, col);
+        } else if (currentHall && isVip(row, col, currentHall)) {
+            // из вип в заблок
+            newCurrentHall = currentHall.copy().setBlockedPlace(row, col);
+        } else if (currentHall && isBlocked(row, col, currentHall)) {
+            // из заблок в станд
+            newCurrentHall = currentHall.copy().setStandardPlace(row, col);
+        }
+        if (newCurrentHall) {
+            setCurrentHall(newCurrentHall);
+            dispatch(updateCurrentHall(newCurrentHall));
         }
     }
     const isButtonsEnabled = currentHalls.filter(h => h.id === currentHall?.id).length != 0;
@@ -90,7 +111,27 @@ export function HallConfig() {
                 <span className={styles["conf-step__chair"] + " " + styles["conf-step__chair_disabled"]}></span> — заблокированные (нет кресла)
                 <p className={styles["conf-step__hint"]}>Чтобы изменить вид кресла, нажмите по нему левой кнопкой мыши</p>
             </div>
-            <HallPlaces currentHall={currentHall}></HallPlaces>
+            <div className={styles["conf-step__hall"]}>
+                <div className={styles["conf-step__hall-wrapper"]}>
+                    {
+                        Array(currentHall?.rows).fill(0).map((_, index) => index).map((row) => {
+                            return (
+                                <div key={row} className={styles["conf-step__row"]}>
+                                    {Array(currentHall?.cols).fill(0).map((_, index) => index).map((col) => {
+                                        return (<span key={col} className={styles["conf-step__chair"] + " " +
+                                            (isBlocked(row, col, currentHall) ? styles["conf-step__chair_disabled"] : "") + " " +
+                                            (isVip(row, col, currentHall) ? styles["conf-step__chair_vip"] : "") + " " +
+                                            (isStandard(row, col, currentHall) ? styles["conf-step__chair_standard"] : "")}
+                                                      data-row={row}
+                                                      data-col={col}
+                                                      onClick={onPlaceClick}></span>)
+                                    })}
+                                </div>
+                            )
+                        })
+                    }
+                </div>
+            </div>
             <fieldset className={styles["conf-step__buttons"] + " " + styles["text-center"]}>
                 <button className={styles["conf-step__button"] + " " + styles["conf-step__button-regular"]}
                     disabled={!isButtonsEnabled}
@@ -101,4 +142,18 @@ export function HallConfig() {
             </fieldset>
         </>
         );
+}
+
+function isBlocked(row: number, col: number, currentHall: CurrentHall | null): boolean {
+    return !!currentHall && !!currentHall.places && currentHall.places.length != 0
+        && !!currentHall.places.find(place => place.row === row && place.col === col && place.isBlocked);
+}
+
+function isVip(row: number, col: number, currentHall: CurrentHall | null): boolean {
+    return !!currentHall && !!currentHall.places && currentHall.places.length != 0
+        && !!currentHall.places.find(place => place.row === row && place.col === col && place.isVip);
+}
+
+function isStandard(row: number, col: number, currentHall: CurrentHall | null): boolean {
+    return !isVip(row, col, currentHall) && !isBlocked(row, col, currentHall);
 }
