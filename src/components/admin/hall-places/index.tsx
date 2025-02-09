@@ -3,7 +3,6 @@ import {CurrentHall} from "../../../data/CurrentHall";
 
 export function HallPlaces(props: {currentHall: CurrentHall | null}) {
     const {currentHall} = props;
-    console.debug(currentHall)
     return (
         <div className={styles["conf-step__hall"]}>
             <div className={styles["conf-step__hall-wrapper"]}>
