@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "backend": "docker run -p 8080:8080 ghcr.io/igrkirillov/gocinema-restserver:latest"
+    "backend": "docker pull ghcr.io/igrkirillov/gocinema-restserver:latest && docker run --rm -p 8080:8080 ghcr.io/igrkirillov/gocinema-restserver:latest"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.1",

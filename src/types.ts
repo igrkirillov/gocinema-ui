@@ -26,7 +26,16 @@ export type Hall = {
     id: number
     name: string,
     cols: number,
-    rows: number
+    rows: number,
+    places: Place[]
+}
+
+export type Place = {
+    id: number,
+    row: number,
+    col: number,
+    isVip: boolean,
+    isBlocked: boolean
 }
 
 export type HallsState = ArrayDataState<Hall>
@@ -34,5 +43,6 @@ export type HallsState = ArrayDataState<Hall>
 export type HallParameters = {
     name: string,
     rows: number,
-    cols: number
+    cols: number,
+    places: Place[]
 }

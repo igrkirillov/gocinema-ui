@@ -11,7 +11,10 @@ export function HallPlaces(props: {currentHall: CurrentHall | null}) {
                         return (
                             <div key={row} className={styles["conf-step__row"]}>
                                 {Array(currentHall?.cols).fill(0).map((_, index) => index).map((col) => {
-                                    return (<span key={col} className={styles["conf-step__chair"] + " " + styles["conf-step__chair_disabled"]}></span>)
+                                    return (<span key={col} className={styles["conf-step__chair"] + " " +
+                                        isBlocked(row, col, currentHall) ? styles["conf-step__chair_disabled"] : "" + " " +
+                                        isVip(row, col, currentHall) ? styles["conf-step__chair_vip"] : "" + " " +
+                                        isStandard(row, col, currentHall) ? styles["conf-step__chair_standard"] : ""}></span>)
                                 })}
                             </div>
                         )
@@ -20,4 +23,18 @@ export function HallPlaces(props: {currentHall: CurrentHall | null}) {
             </div>
         </div>
     )
+}
+
+function isBlocked(row: number, col: number, currentHall: CurrentHall | null): boolean {
+    return !!currentHall && !!currentHall.places
+        && !!currentHall.places.filter(place => place.row === row && place.col === col && place.isBlocked);
+}
+
+function isVip(row: number, col: number, currentHall: CurrentHall | null): boolean {
+    return !!currentHall && !!currentHall.places
+        && !!currentHall.places.filter(place => place.row === row && place.col === col && place.isVip);
+}
+
+function isStandard(row: number, col: number, currentHall: CurrentHall | null): boolean {
+    return !isVip(row, col, currentHall) && !isBlocked(row, col, currentHall);
 }

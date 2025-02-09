@@ -18,13 +18,13 @@ export function HallConfig() {
     const onHallRowsChange = (event: ChangeEvent<HTMLInputElement>) => {
         if (currentHall) {
             currentHall.rows = Number(event.currentTarget.value);
-            setCurrentHall(new CurrentHall(currentHall));
+            setCurrentHall(currentHall.copy());
         }
     }
     const onHallColsChange = (event: ChangeEvent<HTMLInputElement>) => {
         if (currentHall) {
             currentHall.cols = Number(event.currentTarget.value);
-            setCurrentHall(new CurrentHall(currentHall));
+            setCurrentHall(currentHall.copy());
         }
     }
     return error ? (<Error error={error}/>) : (
