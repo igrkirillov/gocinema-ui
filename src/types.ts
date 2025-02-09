@@ -27,7 +27,9 @@ export type Hall = {
     name: string,
     cols: number,
     rows: number,
-    places: Place[]
+    places: Place[],
+    vipPrice: number,
+    standardPrice: number
 }
 
 export type Place = {
@@ -39,14 +41,17 @@ export type Place = {
 }
 
 export type HallsState = ArrayDataState<Hall> & {
-    currentHalls: CurrentHallData[]
+    currentHalls: CurrentHallData[],
+    currentPricings: CurrentPricingData[]
 }
 
 export type HallParameters = {
     name: string,
     rows: number,
     cols: number,
-    places: PlaceParameters[]
+    places: PlaceParameters[],
+    standardPrice: number,
+    vipPrice: number
 }
 
 export type PlaceParameters = {
@@ -69,4 +74,10 @@ export type CurrentPlaceData = {
     col: number,
     isVip: boolean,
     isBlocked: boolean
+}
+
+export type CurrentPricingData = {
+    id: number | null,
+    vipPrice: number,
+    standardPrice: number
 }

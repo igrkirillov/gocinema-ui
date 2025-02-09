@@ -4,6 +4,7 @@ import {Main} from "./main";
 import {Step} from "./step";
 import {HallControl} from "./hall-control";
 import {HallConfig} from "./hall-config";
+import {Pricing} from "./pricing";
 
 export function Admin() {
     return (
@@ -17,7 +18,7 @@ export function Admin() {
                     <HallConfig></HallConfig>
                 </Step>
                 <Step title="Конфигурация цен">
-                    <span>Text</span>
+                    <Pricing></Pricing>
                 </Step>
                 <Step title="Сетка сеансов">
                     <span>Text</span>

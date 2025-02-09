@@ -1,5 +1,5 @@
 import config from "../config/app.json";
-import {CurrentHallData, Hall, HallParameters, PlaceParameters} from "./types";
+import {CurrentHallData, CurrentPricingData, Hall, HallParameters, PlaceParameters} from "./types";
 
 export async function getAllHalls(): Promise<Hall[]> {
     const response = await fetch(config.serverUrl + "/halls", {method: "GET"});
@@ -35,7 +35,7 @@ export async function createNextHall(allHalls: Hall[]): Promise<Hall> {
     }
 }
 
-export async function saveHall(currentHall: CurrentHallData): Promise<void> {
+export async function saveHall(currentHall: CurrentHallData, hall: Hall): Promise<void> {
     const response = await fetch(config.serverUrl + "/halls/" + currentHall.id,
         {
             method: "PATCH",
@@ -50,7 +50,36 @@ export async function saveHall(currentHall: CurrentHallData): Promise<void> {
                         isVip: p.isVip,
                         isBlocked: p.isBlocked
                     } as PlaceParameters
-                })} as HallParameters),
+                }),
+                standardPrice: hall.standardPrice,
+                vipPrice: hall.vipPrice} as HallParameters),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+    if (!response.ok) {
+        throw Error(response.statusText);
+    }
+}
+
+export async function savePricing(currentPricing: CurrentPricingData, hall: Hall): Promise<void> {
+    const response = await fetch(config.serverUrl + "/halls/" + currentPricing.id,
+        {
+            method: "PATCH",
+            body: JSON.stringify({
+                name: hall.name,
+                cols: hall.cols,
+                rows: hall.rows,
+                places: hall.places?.map(p => {
+                    return {
+                        row: p.row,
+                        col: p.col,
+                        isVip: p.isVip,
+                        isBlocked: p.isBlocked
+                    } as PlaceParameters
+                }),
+                standardPrice: currentPricing.standardPrice,
+                vipPrice: currentPricing.vipPrice} as HallParameters),
             headers: {
                 'Content-Type': 'application/json'
             },
