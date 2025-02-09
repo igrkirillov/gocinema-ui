@@ -47,7 +47,7 @@ html {
 }
 
 body {
-  background-image: url('../../assets/background.jpg');
+  background-image: url('../i/background.jpg');
   background-color: rgba(0, 0, 0, 0.50);
   background-blend-mode: multiply;
   background-size: cover;
@@ -150,7 +150,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     right: $colwidth;
     width: 24px;
     height: 16px;
-    background-image: url('../../assets/switch.png');
+    background-image: url('../i/switch.png');
     background-size: 24px 16px;
   }
   
@@ -321,10 +321,6 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   
 }
 
-.conf-step__button:disabled {
-  background-color: $grey;
-}
-
 .conf-step__button-trash {
   position: relative;
   width: 20px;
@@ -338,7 +334,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     left: 4px;
     width: 12px;
     height: 12px;
-    background-image: url('../../assets/trash-sprite.png');
+    background-image: url('../i/trash-sprite.png');
     background-position: 0 0;
     background-size: 24px 12px;
     background-repeat: no-repeat;
@@ -425,7 +421,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
 .conf-step__chair_vip {
   border-color: #0a828a;
   background-color: #b0d6d8;
-  background-image: url('../../assets/green-pattern.png');
+  background-image: url('../i/green-pattern.png');
   background-repeat: repeat;
 }
 
@@ -678,14 +674,11 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   position: fixed;
   width: 100%;
   height: 100%;
-  top: 0;
-  left: 0;
   z-index: 100;
   
   &__title {
     font-size: 2.2rem;
     font-weight: 700;
-    color: white;
     text-transform: uppercase;
   }
 
@@ -734,7 +727,6 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     img {
       height: 1em;
       transition: .3s all ease;
-      cursor: pointer;
 
       &:hover {
         transform: scale(1.2);

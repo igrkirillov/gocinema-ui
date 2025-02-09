@@ -81,3 +81,11 @@ export type CurrentPricingData = {
     vipPrice: number,
     standardPrice: number
 }
+
+export type MovieData = {
+    id: number | null
+    name: string,
+    description: string,
+    country: string,
+    duration: number
+}
