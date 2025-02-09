@@ -48,5 +48,12 @@ export type HallParameters = {
     name: string,
     rows: number,
     cols: number,
-    places: Place[]
+    places: PlaceParameters[]
+}
+
+export type PlaceParameters = {
+    row: number,
+    col: number,
+    isVip: boolean,
+    isBlocked: boolean
 }

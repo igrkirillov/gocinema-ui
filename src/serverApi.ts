@@ -1,5 +1,6 @@
 import config from "../config/app.json";
-import {Hall, HallParameters} from "./types";
+import {Hall, HallParameters, PlaceParameters} from "./types";
+import {CurrentHall} from "./data/CurrentHall";
 
 export async function getAllHalls(): Promise<Hall[]> {
     const response = await fetch(config.serverUrl + "/halls", {method: "GET"});
@@ -31,6 +32,31 @@ export async function createNextHall(allHalls: Hall[]): Promise<Hall> {
     if (response.ok) {
         return await response.json() as Hall;
     } else {
+        throw Error(response.statusText);
+    }
+}
+
+export async function saveHall(currentHall: CurrentHall): Promise<void> {
+    const response = await fetch(config.serverUrl + "/halls/" + currentHall.id,
+        {
+            method: "PATCH",
+            body: JSON.stringify({
+                name: currentHall.name,
+                cols: currentHall.cols,
+                rows: currentHall.rows,
+                places: currentHall.places?.map(p => {
+                    return {
+                        row: p.row,
+                        col: p.col,
+                        isVip: p.isVip,
+                        isBlocked: p.isBlocked
+                    } as PlaceParameters
+                })} as HallParameters),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+    if (!response.ok) {
         throw Error(response.statusText);
     }
 }

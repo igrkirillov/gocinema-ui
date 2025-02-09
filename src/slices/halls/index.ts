@@ -1,6 +1,6 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Hall, HallsState} from "../../types";
-import {createNextHall, deleteHallById, getAllHalls} from "../../serverApi";
+import {createNextHall, deleteHallById, getAllHalls, saveHall} from "../../serverApi";
 import {CurrentHall} from "../../data/CurrentHall";
 
 const createSliceWithThunk = buildCreateSlice({
@@ -101,10 +101,21 @@ export const hallsSlice = createSliceWithThunk({
                 state.currentHalls.push(action.payload);
             }
         }),
-        saveCurrentHall: create.asyncThunk<null, CurrentHall>(
+        cancelCurrentHall: create.reducer((state, action: PayloadAction<CurrentHall>) => {
+            const index = state.currentHalls && state.currentHalls.findIndex(h => h.id === action.payload.id);
+            if (index && index >= 0) {
+                state.currentHalls.splice(index, 1);
+            }
+        }),
+        saveCurrentHall: create.asyncThunk<Hall, CurrentHall>(
             async  (currentHall, thunkApi) => {
                 try {
-                    // saving
+                    await saveHall(currentHall);
+                    const updatedHall = (await getAllHalls()).find(h => h.id === currentHall.id);
+                    if (!updatedHall) {
+                        return thunkApi.rejectWithValue(`Hall with id ${currentHall.id} not found`);
+                    }
+                    return updatedHall;
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
@@ -114,9 +125,11 @@ export const hallsSlice = createSliceWithThunk({
                     state.loading = true;
                     state.error = null;
                 },
-                fulfilled: (state, action: PayloadAction<CurrentHall>) => {
-                    const index = state.currentHalls.findIndex(h => h.id === action.payload.id);
-                    state.currentHalls.splice(index, 1);
+                fulfilled: (state, action: PayloadAction<Hall>) => {
+                    const currentHallIndex = state.currentHalls.findIndex(h => h.id === action.payload.id);
+                    state.currentHalls.splice(currentHallIndex, 1);
+                    const hallIndex = state.data.findIndex(h => h.id === action.payload.id);
+                    state.data[hallIndex] = action.payload;
                 },
                 rejected: (state, action) => {
                     state.error = action.payload as string;
@@ -128,5 +141,5 @@ export const hallsSlice = createSliceWithThunk({
     })
 })
 
-export const {fetchHalls, deleteHall, createNewHall, updateCurrentHall, saveCurrentHall} = hallsSlice.actions;
+export const {fetchHalls, deleteHall, createNewHall, updateCurrentHall, saveCurrentHall, cancelCurrentHall} = hallsSlice.actions;
 export const {halls, hallsState} = hallsSlice.selectors;
