@@ -1,13 +1,15 @@
-import {useAppSelector} from "../../../hooks";
+import {useAppDispatch, useAppSelector} from "../../../hooks";
 import {ChangeEvent, useEffect, useState} from "react";
 import {Error} from "../../error/Error";
-import {hallsState} from "../../../slices/halls";
+import {hallsState, updateCurrentHall} from "../../../slices/halls";
 import styles from "../styles.module.scss"
+import "../normalize.css"
 import {HallPlaces} from "../hall-places";
 import {CurrentHall} from "../../../data/CurrentHall";
 
 export function HallConfig() {
-    const {data: halls, error} = useAppSelector(hallsState);
+    const {data: halls, error, currentHalls} = useAppSelector(hallsState);
+    const dispatch = useAppDispatch();
     // перерисовывать компонент при изменении модели
     useEffect(() => {}, [halls]);
     const [currentHall, setCurrentHall] = useState(halls.length > 0 ? new CurrentHall(halls[0]) : null);
@@ -19,14 +21,18 @@ export function HallConfig() {
         if (currentHall) {
             currentHall.rows = Number(event.currentTarget.value);
             setCurrentHall(currentHall.copy());
+            dispatch(updateCurrentHall(currentHall));
         }
     }
     const onHallColsChange = (event: ChangeEvent<HTMLInputElement>) => {
         if (currentHall) {
             currentHall.cols = Number(event.currentTarget.value);
             setCurrentHall(currentHall.copy());
+            dispatch(updateCurrentHall(currentHall));
         }
     }
+    const isButtonsEnabled = currentHalls.filter(h => h.id === currentHall?.id).length != 0;
+    console.debug(isButtonsEnabled)
     return error ? (<Error error={error}/>) : (
         <>
             <p className={styles["conf-step__paragraph"]}>Выберите зал для конфигурации:</p>
@@ -64,6 +70,12 @@ export function HallConfig() {
                 <p className={styles["conf-step__hint"]}>Чтобы изменить вид кресла, нажмите по нему левой кнопкой мыши</p>
             </div>
             <HallPlaces currentHall={currentHall}></HallPlaces>
+            <fieldset className={styles["conf-step__buttons"] + " " + styles["text-center"]}>
+                <button className={styles["conf-step__button"] + " " + styles["conf-step__button-regular"]}
+                    disabled={!isButtonsEnabled}>Отмена</button>
+                <input type="submit" value="Сохранить" className={styles["conf-step__button"] + " " + styles["conf-step__button-accent"]}
+                    disabled={!isButtonsEnabled}></input>
+            </fieldset>
         </>
         );
 }

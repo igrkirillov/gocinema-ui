@@ -1,3 +1,5 @@
+import {CurrentHall} from "./data/CurrentHall";
+
 export type Movie = {
     id: number
     name: string,
@@ -38,7 +40,9 @@ export type Place = {
     isBlocked: boolean
 }
 
-export type HallsState = ArrayDataState<Hall>
+export type HallsState = ArrayDataState<Hall> & {
+    currentHalls: CurrentHall[]
+}
 
 export type HallParameters = {
     name: string,

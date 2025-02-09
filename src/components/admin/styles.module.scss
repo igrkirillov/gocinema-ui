@@ -321,6 +321,10 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   
 }
 
+.conf-step__button:disabled {
+  background-color: $grey;
+}
+
 .conf-step__button-trash {
   position: relative;
   width: 20px;
