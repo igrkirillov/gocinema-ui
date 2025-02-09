@@ -20,7 +20,11 @@ export function HallConfig() {
     }, [halls]);
     const onHallSwitcherChange = (event: ChangeEvent<HTMLInputElement>) => {
         const hallId = Number(event.currentTarget.dataset["id"]);
-        setCurrentHall(new CurrentHall(halls.find((hall) => hall.id === hallId) ?? null));
+        // currentHall берём из хранилища изменённых залов, если он там есть, если нету - создаём новый
+        setCurrentHall(
+            currentHall && currentHall.id && currentHalls.findIndex(h => h.id === hallId) >= 0
+                ? currentHalls.find(h => h.id === hallId) ?? null
+                : new CurrentHall(halls.find((hall) => hall.id === hallId) ?? null));
     }
     const onHallRowsChange = (event: ChangeEvent<HTMLInputElement>) => {
         if (currentHall) {
@@ -50,7 +54,6 @@ export function HallConfig() {
         }
     }
     const isButtonsEnabled = currentHalls.filter(h => h.id === currentHall?.id).length != 0;
-    console.debug(currentHall)
     return error ? (<Error error={error}/>) : (
         <>
             <p className={styles["conf-step__paragraph"]}>Выберите зал для конфигурации:</p>
