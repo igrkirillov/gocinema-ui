@@ -1,7 +1,7 @@
-import {useAppDispatch, useAppSelector} from "../../../hooks";
-import {ChangeEvent, MouseEvent, useEffect, useState} from "react";
+import {useAppSelector} from "../../../hooks";
+import {ChangeEvent, useEffect, useState} from "react";
 import {Error} from "../../error/Error";
-import {createNewHall, deleteHall, fetchHalls, hallsState} from "../../../slices/halls";
+import {hallsState} from "../../../slices/halls";
 import styles from "../styles.module.scss"
 import {HallPlaces} from "../hall-places";
 import {CurrentHall} from "../../../data/CurrentHall";
