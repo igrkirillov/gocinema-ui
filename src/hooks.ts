@@ -8,8 +8,14 @@ export const useAppDispatch = useDispatch.withTypes<AppDispatch>()
 export const useAppSelector = useSelector.withTypes<RootState>()
 export const useAppStore = useStore.withTypes<AppStore>()
 
-export function useCurrentHall(defaultCurrentHall: CurrentHall | null): [CurrentHall|null, (currentHall: CurrentHall | null) => void ] {
-    const [currentHallData, setCurrentHallData] = useState(defaultCurrentHall?.serialize());
+/**
+ * Кастомный хук над классом {@link CurrentHall},
+ * позволяет работать с классом, а в стейт сохранять {@link CurrentHallData}
+ *
+ * @param initCurrentHall
+ */
+export function useCurrentHall(initCurrentHall: CurrentHall | null): [CurrentHall|null, (currentHall: CurrentHall | null) => void ] {
+    const [currentHallData, setCurrentHallData] = useState(initCurrentHall?.serialize());
     const setCurrentHall = (currentHall: CurrentHall | null) => {
         setCurrentHallData(currentHall?.serialize());
     }
