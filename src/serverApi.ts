@@ -1,6 +1,5 @@
 import config from "../config/app.json";
-import {Hall, HallParameters, PlaceParameters} from "./types";
-import {CurrentHall} from "./data/CurrentHall";
+import {CurrentHallData, Hall, HallParameters, PlaceParameters} from "./types";
 
 export async function getAllHalls(): Promise<Hall[]> {
     const response = await fetch(config.serverUrl + "/halls", {method: "GET"});
@@ -36,7 +35,7 @@ export async function createNextHall(allHalls: Hall[]): Promise<Hall> {
     }
 }
 
-export async function saveHall(currentHall: CurrentHall): Promise<void> {
+export async function saveHall(currentHall: CurrentHallData): Promise<void> {
     const response = await fetch(config.serverUrl + "/halls/" + currentHall.id,
         {
             method: "PATCH",

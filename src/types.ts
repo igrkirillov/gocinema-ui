@@ -1,5 +1,3 @@
-import {CurrentHall} from "./data/CurrentHall";
-
 export type Movie = {
     id: number
     name: string,
@@ -41,7 +39,7 @@ export type Place = {
 }
 
 export type HallsState = ArrayDataState<Hall> & {
-    currentHalls: CurrentHall[]
+    currentHalls: CurrentHallData[]
 }
 
 export type HallParameters = {
@@ -52,6 +50,21 @@ export type HallParameters = {
 }
 
 export type PlaceParameters = {
+    row: number,
+    col: number,
+    isVip: boolean,
+    isBlocked: boolean
+}
+
+export type CurrentHallData = {
+    id: number | null,
+    name: string,
+    rows: number,
+    cols: number,
+    places: CurrentPlaceData[]
+}
+
+export type CurrentPlaceData = {
     row: number,
     col: number,
     isVip: boolean,

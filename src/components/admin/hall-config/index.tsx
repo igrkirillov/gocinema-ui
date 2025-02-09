@@ -1,5 +1,5 @@
-import {useAppDispatch, useAppSelector} from "../../../hooks";
-import {ChangeEvent, MouseEvent, useEffect, useState} from "react";
+import {useAppDispatch, useAppSelector, useCurrentHall} from "../../../hooks";
+import {ChangeEvent, MouseEvent, useEffect} from "react";
 import {Error} from "../../error/Error";
 import {cancelCurrentHall, hallsState, saveCurrentHall, updateCurrentHall} from "../../../slices/halls";
 import styles from "../styles.module.scss"
@@ -9,28 +9,29 @@ import {CurrentHall} from "../../../data/CurrentHall";
 export function HallConfig() {
     const {data: halls, error, currentHalls} = useAppSelector(hallsState);
     const dispatch = useAppDispatch();
-    const [currentHall, setCurrentHall] = useState(halls.length > 0 ? new CurrentHall(halls[0]) : null);
+    const [currentHall, setCurrentHall] = useCurrentHall(
+        halls.length > 0 ? new CurrentHall().fillFromHall(halls[0]) : null);
     // перерисовывать компонент при изменении модели
     useEffect(() => {
         // если currentHall ещё не задан, тогда будет текущим halls[0], иначе существующий currentHall просто рефрешим
         setCurrentHall(!currentHall?.id && halls.length > 0
-            ? new CurrentHall(halls[0])
-            : new CurrentHall(halls.find((hall) => hall.id === currentHall?.id) ?? null));
+            ? new CurrentHall().fillFromHall(halls[0])
+            : new CurrentHall().fillFromHall(halls.find((hall) => hall.id === currentHall?.id) ?? null));
     }, [halls]);
     const onHallSwitcherChange = (event: ChangeEvent<HTMLInputElement>) => {
         const hallId = Number(event.currentTarget.dataset["id"]);
         // currentHall берём из хранилища изменённых залов, если он там есть, если нету - создаём новый
         setCurrentHall(
             currentHall && currentHall.id && currentHalls.findIndex(h => h.id === hallId) >= 0
-                ? currentHalls.find(h => h.id === hallId) ?? null
-                : new CurrentHall(halls.find((hall) => hall.id === hallId) ?? null));
+                ? new CurrentHall().fillFromData(currentHalls.find(h => h.id === hallId) ?? null)
+                : new CurrentHall().fillFromHall(halls.find((hall) => hall.id === hallId) ?? null));
     }
     const onHallRowsChange = (event: ChangeEvent<HTMLInputElement>) => {
         if (currentHall) {
             currentHall.rows = Number(event.currentTarget.value);
             const newCurrentHall = currentHall.copy().refill();
             setCurrentHall(newCurrentHall);
-            dispatch(updateCurrentHall(newCurrentHall));
+            dispatch(updateCurrentHall(newCurrentHall.serialize()));
         }
     }
     const onHallColsChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -38,20 +39,20 @@ export function HallConfig() {
             currentHall.cols = Number(event.currentTarget.value);
             const newCurrentHall = currentHall.copy().refill();
             setCurrentHall(newCurrentHall);
-            dispatch(updateCurrentHall(newCurrentHall));
+            dispatch(updateCurrentHall(newCurrentHall.serialize()));
         }
     }
     const onSaveClick = (event: MouseEvent<HTMLInputElement>) => {
         if (currentHall) {
             event.preventDefault();
-            dispatch(saveCurrentHall(currentHall));
+            dispatch(saveCurrentHall(currentHall.serialize()));
         }
     }
     const onCancelClick = (event: MouseEvent<HTMLButtonElement>) => {
         if (currentHall) {
             event.preventDefault();
-            dispatch(cancelCurrentHall(currentHall));
-            setCurrentHall(new CurrentHall(halls.find(h => h.id === currentHall.id) ?? null));
+            dispatch(cancelCurrentHall(currentHall.serialize()));
+            setCurrentHall(new CurrentHall().fillFromHall(halls.find(h => h.id === currentHall.id) ?? null));
         }
     }
     const onPlaceClick = (event: MouseEvent<HTMLSpanElement>) => {
@@ -71,7 +72,7 @@ export function HallConfig() {
         }
         if (newCurrentHall) {
             setCurrentHall(newCurrentHall);
-            dispatch(updateCurrentHall(newCurrentHall));
+            dispatch(updateCurrentHall(newCurrentHall.serialize()));
         }
     }
     const isButtonsEnabled = currentHalls.filter(h => h.id === currentHall?.id).length != 0;

@@ -1,7 +1,6 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {Hall, HallsState} from "../../types";
+import {CurrentHallData, Hall, HallsState} from "../../types";
 import {createNextHall, deleteHallById, getAllHalls, saveHall} from "../../serverApi";
-import {CurrentHall} from "../../data/CurrentHall";
 
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
@@ -93,21 +92,21 @@ export const hallsSlice = createSliceWithThunk({
                     state.loading = false;
                 }
             }),
-        updateCurrentHall: create.reducer((state, action: PayloadAction<CurrentHall>) => {
-            const index = state.currentHalls && state.currentHalls.findIndex(h => h.id === action.payload.id);
-            if (index && index >= 0) {
+        updateCurrentHall: create.reducer((state, action: PayloadAction<CurrentHallData>) => {
+            const index = state.currentHalls.findIndex(h => h.id === action.payload.id);
+            if (index >= 0) {
                 state.currentHalls[index] = action.payload;
             } else {
                 state.currentHalls.push(action.payload);
             }
         }),
-        cancelCurrentHall: create.reducer((state, action: PayloadAction<CurrentHall>) => {
+        cancelCurrentHall: create.reducer((state, action: PayloadAction<CurrentHallData>) => {
             const index = state.currentHalls && state.currentHalls.findIndex(h => h.id === action.payload.id);
             if (index && index >= 0) {
                 state.currentHalls.splice(index, 1);
             }
         }),
-        saveCurrentHall: create.asyncThunk<Hall, CurrentHall>(
+        saveCurrentHall: create.asyncThunk<Hall, CurrentHallData>(
             async  (currentHall, thunkApi) => {
                 try {
                     await saveHall(currentHall);
