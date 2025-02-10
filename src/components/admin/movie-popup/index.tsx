@@ -1,7 +1,7 @@
 import styles from "../styles.module.scss";
 import popupClose from "../../../assets/close.png";
 import {MovieData} from "../../../types";
-import {FormEvent, FormEventHandler, MouseEvent} from "react";
+import {FormEvent, MouseEvent, useEffect, useRef} from "react";
 
 export function MoviePopup(props: {
     data: MovieData,
@@ -16,11 +16,20 @@ export function MoviePopup(props: {
         data.description = formData.get("description") as string;
         data.country = formData.get("country") as string;
         saveCallback(data);
+        event.currentTarget.reset();
     }
     const onCancelButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         cancelCallback();
     }
+    const onCloseLinkClick = (event: MouseEvent<HTMLAnchorElement>) => {
+        event.preventDefault();
+        cancelCallback();
+    }
+    const inputNameRef = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        inputNameRef.current?.focus();
+    })
     return (
         <div className={styles["popup"] + " " + (isActive ? styles["active"] : "")}>
             <div className={styles["popup__container"]}>
@@ -28,7 +37,7 @@ export function MoviePopup(props: {
                     <div className={styles["popup__header"]}>
                         <h2 className={styles["popup__title"]}>
                             {data.id ? "Редактирование фильма" : "Добавление фильма"}
-                            <a className={styles["popup__dismiss"]}>
+                            <a className={styles["popup__dismiss"]} onClick={onCloseLinkClick}>
                                 <img src={popupClose}/>
                             </a>
                         </h2>
@@ -43,13 +52,14 @@ export function MoviePopup(props: {
                                         Название фильма
                                         <input className={styles["conf-step__input"]} type="text"
                                                placeholder="Например, «Гражданин Кейн»" name="name" required
-                                               value={data.name}></input>
+                                               defaultValue={data.name}
+                                               ref={inputNameRef}></input>
                                     </label>
-                                    <label className={styles["conf-step__label"] +" "+ styles["conf-step__label-fullsize"]} htmlFor="name">
+                                    <label className={styles["conf-step__label"] +" "+ styles["conf-step__label-fullsize"]} htmlFor="duration">
                                         Продолжительность фильма (мин.)
                                         <input className={styles["conf-step__input"]} type="text" name="duration"
-                                               data-last-value="" required
-                                               value={data.duration}></input>
+                                               required
+                                               defaultValue={data.duration}></input>
                                     </label>
                                     <label className={styles["conf-step__label"] + " " + styles["conf-step__label-fullsize"]} htmlFor="description">
                                         Описание фильма
@@ -60,8 +70,7 @@ export function MoviePopup(props: {
                                     <label className={styles["conf-step__label"] + " " + styles["conf-step__label-fullsize"]} htmlFor="country">
                                         Страна
                                         <input className={styles["conf-step__input"]} type="text" name="country"
-                                               data-last-value="" required
-                                            value={data.country}></input>
+                                               defaultValue={data.country}></input>
                                     </label>
                                 </div>
                             </div>

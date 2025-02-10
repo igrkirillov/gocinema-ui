@@ -3,7 +3,8 @@ export type Movie = {
     name: string,
     description: string,
     country: string,
-    releaseDate: string
+    releaseDate: string,
+    duration: number
 }
 
 type ArrayDataState<T> = {
