@@ -1,4 +1,4 @@
-import {Hall} from "../types";
+import {Hall, Movie, MovieData} from "../types";
 
 export function getHallByIdOrThrow(id: number | null, halls: Hall[]): Hall {
     const hall = halls.find(h => h.id === id);
@@ -6,4 +6,14 @@ export function getHallByIdOrThrow(id: number | null, halls: Hall[]): Hall {
         throw Error(`Hall with id ${id} not found`);
     }
     return hall;
+}
+
+export function toMovieData(movie: Movie | null): MovieData {
+    return (movie ? {
+        id: movie.id,
+        name: movie.name,
+        description: movie.description,
+        country: movie.country,
+        duration: movie.duration
+    } : {}) as MovieData;
 }

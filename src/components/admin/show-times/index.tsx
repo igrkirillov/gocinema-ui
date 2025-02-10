@@ -6,6 +6,7 @@ import {MovieData} from "../../../types";
 import {useAppDispatch, useAppSelector} from "../../../hooks";
 import {fetchMovies, moviesState, saveMovie} from "../../../slices/movies";
 import moviePoster from "../../../assets/poster.png"
+import {toMovieData} from "../../../data/dataUtils";
 
 export function ShowTimes() {
     const [isActiveMoviePopup, setActiveMoviePopup] = useState(false);
@@ -27,6 +28,12 @@ export function ShowTimes() {
     const cancelCallback = () => {
         setActiveMoviePopup(false);
     }
+    const onMovieDivClick = (event: MouseEvent<HTMLDivElement>) => {
+        const movieId = Number(event.currentTarget.dataset["id"]);
+        const movie = movies.find(m => m.id === movieId) ?? null;
+        setCurrentMovie(toMovieData(movie));
+        setActiveMoviePopup(true);
+    }
     return (
         <>
             <p className={styles["conf-step__paragraph"]}>
@@ -35,15 +42,18 @@ export function ShowTimes() {
             </p>
             <div className={styles["conf-step__movies"]}>
                 {movies.map(m => (
-                    <div className={styles["conf-step__movie"]}>
+                    <div key={m.id} data-id={m.id} className={styles["conf-step__movie"]}
+                        onClick={onMovieDivClick}>
                         <img className={styles["conf-step__movie-poster"]} alt="poster" src={moviePoster}></img>
                         <h3 className={styles["conf-step__movie-title"]}>{m.name}</h3>
                         <p className={styles["conf-step__movie-duration"]}>{m.duration} минут</p>
                     </div>
                 ))}
             </div>
-            <MoviePopup data={currentMovie} isActive={isActiveMoviePopup}
-                        saveCallback={saveCallback} cancelCallback={cancelCallback}></MoviePopup>
+            {isActiveMoviePopup
+                ? (<MoviePopup data={currentMovie} isActive={isActiveMoviePopup}
+                               saveCallback={saveCallback} cancelCallback={cancelCallback}></MoviePopup>)
+                : (<></>)}
         </>
     )
 }
