@@ -89,3 +89,10 @@ export type MovieData = {
     country: string,
     duration: number
 }
+
+export type MovieParameters = {
+    name: string,
+    description: string,
+    country: string,
+    duration: number
+}

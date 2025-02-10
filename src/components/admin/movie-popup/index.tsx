@@ -1,9 +1,26 @@
 import styles from "../styles.module.scss";
 import popupClose from "../../../assets/close.png";
 import {MovieData} from "../../../types";
+import {FormEvent, FormEventHandler, MouseEvent} from "react";
 
-export function MoviePopup(props: {data: MovieData, isActive: boolean}) {
-    const {data, isActive} = props;
+export function MoviePopup(props: {
+    data: MovieData,
+    isActive: boolean,
+    saveCallback: (data: MovieData) => void,
+    cancelCallback: () => void}) {
+    const {data, isActive, saveCallback, cancelCallback} = props;
+    const onSubmitForm = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        data.name = formData.get("name") as string;
+        data.description = formData.get("description") as string;
+        data.country = formData.get("country") as string;
+        saveCallback(data);
+    }
+    const onCancelButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        cancelCallback();
+    }
     return (
         <div className={styles["popup"] + " " + (isActive ? styles["active"] : "")}>
             <div className={styles["popup__container"]}>
@@ -17,7 +34,7 @@ export function MoviePopup(props: {data: MovieData, isActive: boolean}) {
                         </h2>
                     </div>
                     <div className={styles["popup__wrapper"]}>
-                        <form>
+                        <form onSubmit={onSubmitForm}>
                             <div className={styles["popup__container"]}>
                                 <div className={styles["popup__poster"]}></div>
                                 <div className={styles["popup__form"]}>
@@ -34,15 +51,15 @@ export function MoviePopup(props: {data: MovieData, isActive: boolean}) {
                                                data-last-value="" required
                                                value={data.duration}></input>
                                     </label>
-                                    <label className={styles["conf-step__label"] + " " + styles["conf-step__label-fullsize"]} htmlFor="name">
+                                    <label className={styles["conf-step__label"] + " " + styles["conf-step__label-fullsize"]} htmlFor="description">
                                         Описание фильма
                                         <textarea className={styles["conf-step__input"]} name="description" required>
                                             {data.description}
                                         </textarea>
                                     </label>
-                                    <label className={styles["conf-step__label"] + " " + styles["conf-step__label-fullsize"]} htmlFor="name">
+                                    <label className={styles["conf-step__label"] + " " + styles["conf-step__label-fullsize"]} htmlFor="country">
                                         Страна
-                                        <input className={styles["conf-step__input"]} type="text" name="duration"
+                                        <input className={styles["conf-step__input"]} type="text" name="country"
                                                data-last-value="" required
                                             value={data.country}></input>
                                     </label>
@@ -53,7 +70,8 @@ export function MoviePopup(props: {data: MovieData, isActive: boolean}) {
                                        className={styles["conf-step__button"] + " " + styles["conf-step__button-accent"]} data-event="film_add"></input>
                                 <input type="submit" value="Загрузить постер"
                                        className={styles["conf-step__button"] + " " + styles["conf-step__button-accent"]}></input>
-                                <button className={styles["conf-step__button"] + " " +styles["conf-step__button-regular"]} type="button">Отменить</button>
+                                <button className={styles["conf-step__button"] + " " +styles["conf-step__button-regular"]} type="button"
+                                        onClick={onCancelButtonClick}>Отменить</button>
                             </div>
                         </form>
                     </div>

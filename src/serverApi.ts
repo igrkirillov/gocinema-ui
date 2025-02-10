@@ -1,5 +1,14 @@
 import config from "../config/app.json";
-import {CurrentHallData, CurrentPricingData, Hall, HallParameters, PlaceParameters} from "./types";
+import {
+    CurrentHallData,
+    CurrentPricingData,
+    Hall,
+    HallParameters,
+    Movie,
+    MovieData,
+    MovieParameters,
+    PlaceParameters
+} from "./types";
 
 export async function getAllHalls(): Promise<Hall[]> {
     const response = await fetch(config.serverUrl + "/halls", {method: "GET"});
@@ -85,6 +94,27 @@ export async function savePricing(currentPricing: CurrentPricingData, hall: Hall
             },
         });
     if (!response.ok) {
+        throw Error(response.statusText);
+    }
+}
+
+export async function saveNewMovie(movieData: MovieData): Promise<Movie> {
+    const response = await fetch(config.serverUrl + "/movies",
+        {
+            method: "POST",
+            body: JSON.stringify({
+                name: movieData.name,
+                description: movieData.description,
+                country: movieData.country,
+                releaseDate: null,
+                duration: 120} as MovieParameters),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+    if (response.ok) {
+        return await response.json() as Movie;
+    } else {
         throw Error(response.statusText);
     }
 }
