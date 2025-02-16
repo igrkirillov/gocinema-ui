@@ -13,7 +13,7 @@ import {hallsState} from "../../../slices/halls";
 import {Time} from "../../../data/Time";
 import {SeancePopup} from "../seance-popup";
 
-export function ShowTimes() {
+export function SeanceTimes() {
     const [isActiveMoviePopup, setActiveMoviePopup] = useState(false);
     const [isActiveSeancePopup, setActiveSeancePopup] = useState(false);
     const [currentMovie, setCurrentMovie] = useState({} as MovieData);
@@ -58,6 +58,18 @@ export function ShowTimes() {
         setActiveSeancePopup(true);
     }
 
+    const [colorsMap, setColorsMap] = useState({})
+    useEffect(() => {
+        const colorsMap = {};
+        movies.forEach(m => {
+            const movieDiv = document.getElementById("Movie-" + m.id);
+            const color = window.getComputedStyle(movieDiv as HTMLElement, null)
+                .getPropertyValue("background-color") as string;
+            colorsMap[String(m.id)] = color;
+        })
+        setColorsMap(colorsMap);
+    }, [movies, seances])
+
     return (
         <>
             <p className={styles["conf-step__paragraph"]}>
@@ -66,7 +78,7 @@ export function ShowTimes() {
             </p>
             <div className={styles["conf-step__movies"]}>
                 {movies.map(m => (
-                    <div key={m.id} data-id={m.id} className={styles["conf-step__movie"]}
+                    <div id={"Movie-" + m.id} key={m.id} data-id={m.id} className={styles["conf-step__movie"]}
                          onClick={() => onMovieClick(m)} >
                         <img className={styles["conf-step__movie-poster"]} alt="poster" src={moviePoster}></img>
                         <h3 className={styles["conf-step__movie-title"]}>{m.name}</h3>
@@ -91,14 +103,15 @@ export function ShowTimes() {
                                         .compare(new Time().fillFromString(s2.start)))
                                     .map(s => {
                                         return (
-                                            <div className={styles["conf-step__seances-movie"]}
+                                            <div id={"Seance-" + s.id}
+                                                 className={styles["conf-step__seances-movie"]}
                                                  onClick={(event: MouseEvent<HTMLDivElement>) => {
                                                      event.preventDefault();
                                                      event.stopPropagation();
                                                      onSeanceClick(s)
                                                  }}
                                                  style={{"width": `${minuteToPixels(s.movie.duration)}px`,
-                                                     "backgroundColor": "rgb(133, 255, 137)",
+                                                     "backgroundColor": `${colorsMap[String(s.movie.id)]}`,
                                                      "left": `${minuteToPixels(new Time().fillFromString(s.start).toMinutes())}px`}}>
                                                 <p className={styles["conf-step__seances-movie-title"]}>{s.movie.name}</p>
                                                 <p className={styles["conf-step__seances-movie-start"]}>{s.start}</p>

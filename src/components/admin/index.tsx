@@ -5,7 +5,7 @@ import {Step} from "./step";
 import {HallControl} from "./hall-control";
 import {HallConfig} from "./hall-config";
 import {Pricing} from "./pricing";
-import {ShowTimes} from "./show-times";
+import {SeanceTimes} from "./seance-times";
 
 export function Admin() {
     return (
@@ -22,7 +22,7 @@ export function Admin() {
                     <Pricing></Pricing>
                 </Step>
                 <Step title="Сетка сеансов">
-                    <ShowTimes></ShowTimes>
+                    <SeanceTimes></SeanceTimes>
                 </Step>
                 <Step title="Открыть продажи">
                     <span>Text</span>

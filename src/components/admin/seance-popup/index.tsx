@@ -60,12 +60,14 @@ export function SeancePopup(props: {
                                         <select className={styles["conf-step__input"]} name="hall" required
                                                 defaultValue={data?.hall?.id}
                                                 ref={selectMoviesRef}>
+                                            {halls.map(h => (<option value={h.id}>{h.name}</option>))}
                                         </select>
                                     </label>
                                     <label className={styles["conf-step__label"] +" "+ styles["conf-step__label-fullsize"]} htmlFor="duration">
                                         Фильм
                                         <select className={styles["conf-step__input"]} name="movie" required
                                                 defaultValue={data?.movie?.id}>
+                                            {movies.map(m => (<option value={m.id}>{m.name}</option>))}
                                         </select>
                                     </label>
                                     <label className={styles["conf-step__label"] + " " + styles["conf-step__label-fullsize"]} htmlFor="country">

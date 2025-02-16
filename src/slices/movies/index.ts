@@ -1,5 +1,5 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {Movie, MovieData, MoviesState} from "../../types";
+import {CurrentPricingData, Movie, MovieData, MoviesState} from "../../types";
 import config from "../../../config/app.json"
 import {saveNewMovie} from "../../serverApi";
 
@@ -70,7 +70,7 @@ export const moviesSlice = createSliceWithThunk({
                 settled: (state) => {
                     state.loading = false;
                 }
-            }),
+            })
     })
 })
 
