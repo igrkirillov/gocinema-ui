@@ -7,8 +7,9 @@ import {
     Movie,
     MovieData,
     MovieParameters,
-    PlaceParameters
+    PlaceParameters, Seance, SeanceData, SeanceParameters
 } from "./types";
+import {formatTime} from "./data/dataUtils";
 
 export async function getAllHalls(): Promise<Hall[]> {
     const response = await fetch(config.serverUrl + "/halls", {method: "GET"});
@@ -114,6 +115,26 @@ export async function saveNewMovie(movieData: MovieData): Promise<Movie> {
         });
     if (response.ok) {
         return await response.json() as Movie;
+    } else {
+        throw Error(response.statusText);
+    }
+}
+
+export async function saveNewSeance(data: SeanceData): Promise<Seance> {
+    const response = await fetch(config.serverUrl + "/movie-shows",
+        {
+            method: "POST",
+            body: JSON.stringify({
+                hallId: data.hall.id,
+                movieId: data.movie.id,
+                start: formatTime(data.start)
+            } as SeanceParameters),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+    if (response.ok) {
+        return await response.json() as Seance;
     } else {
         throw Error(response.statusText);
     }

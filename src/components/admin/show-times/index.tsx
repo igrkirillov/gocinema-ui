@@ -1,16 +1,19 @@
 import styles from "../styles.module.scss"
 import "../normalize.css"
-import React, {Component, forwardRef, MouseEvent, useEffect, useRef, useState} from "react";
+import React, {Component, forwardRef, MouseEvent, useEffect, useState} from "react";
 import {MoviePopup} from "../movie-popup";
-import {Movie, MovieData} from "../../../types";
+import {Hall, Movie, MovieData, Seance, SeanceData, TimeData} from "../../../types";
 import {useAppDispatch, useAppSelector} from "../../../hooks";
 import {fetchMovies, moviesState, saveMovie} from "../../../slices/movies";
 import moviePoster from "../../../assets/poster.png"
 import {formatTime, toMovieData} from "../../../data/dataUtils";
-import {DndContext, DragMoveEvent, DragOverEvent, DragOverlay, useDraggable, useDroppable} from "@dnd-kit/core";
+import {DndContext, DragEndEvent, DragMoveEvent, DragOverlay, useDraggable, useDroppable} from "@dnd-kit/core";
 import {ClientRect, DragStartEvent} from "@dnd-kit/core/dist/types";
-import {SortableContext} from "@dnd-kit/sortable";
 import {Rect} from "@dnd-kit/core/dist/utilities";
+import {DEFAULT_DURATION, MINUTE_TO_PX} from "../../../constants";
+import {fetchSeances, saveSeance, seancesState} from "../../../slices/seances";
+import {hallsState} from "../../../slices/halls";
+import {Time} from "../../../data/Time";
 
 export function ShowTimes() {
     const [isActiveMoviePopup, setActiveMoviePopup] = useState(false);
@@ -18,8 +21,11 @@ export function ShowTimes() {
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(fetchMovies());
+        dispatch(fetchSeances());
     }, []);
-    const {data: movies, error} = useAppSelector(moviesState);
+    const {data: movies, error: moviesError} = useAppSelector(moviesState);
+    const {data: seances, error: seancesError} = useAppSelector(seancesState);
+    const {data: halls, error: hallsError} = useAppSelector(hallsState);
     const onAddButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         setCurrentMovie({} as MovieData);
@@ -38,9 +44,24 @@ export function ShowTimes() {
     }
     function handleDragStart(event: DragStartEvent) {
         setDraggingMovie(movies.find(m => m.id === Number(event.active.id)) || null);
+        setDraggingColor(window.getComputedStyle(document.getElementById(String(event.active.id)) as HTMLElement,
+            null).getPropertyValue("background-color"))
     }
-    function handleDragEnd() {
+    function handleDragEnd(event: DragEndEvent) {
+        const timeData = toTimeData(markerProps.bounds, markerProps.rect);
+        const movie = draggingMovie;
+        // @ts-ignore
+        console.debug(event.over)
+        const hall = halls.find(h => h.id === event.over?.data?.current["hallId"]) as Hall;
+        console.debug(timeData)
+        console.debug(movie)
+        console.debug(hall)
+        if (hall && movie && timeData) {
+            dispatch(saveSeance(createSeanceData(hall, movie, timeData)))
+        }
         setDraggingMovie(null);
+        setDraggingColor(null);
+        setMarkerProps({} as MarkerProps);
     }
     function handleDragMove(event: DragMoveEvent) {
         const bounds = timelineRef.current?.getBoundingClientRect() as DOMRect;
@@ -49,34 +70,40 @@ export function ShowTimes() {
         setMarkerProps({visible: markerVisible, bounds: bounds, rect: draggableRect});
     }
     const [draggingMovie, setDraggingMovie] = useState(null as Movie | null);
+    const [draggingColor, setDraggingColor] = useState(null as string | null);
     const timelineRef = React.createRef<HTMLDivElement>();
     const [markerProps, setMarkerProps] = useState<MarkerProps>({} as MarkerProps);
     return (
         <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragMove={handleDragMove}>
             <DragOverlay>
                 {draggingMovie ?
-                (<TimelineItem movie={draggingMovie}></TimelineItem>) : null}
+                (<TimelineItem movie={draggingMovie} color={draggingColor}></TimelineItem>) : null}
             </DragOverlay>
             <p className={styles["conf-step__paragraph"]}>
                 <button className={styles["conf-step__button"] + " " + styles["conf-step__button-accent"]}
                     onClick={onAddButtonClick}>Добавить фильм</button>
             </p>
-                <div className={styles["conf-step__movies"]}>
-                    {movies.map(m => {
-                        const DraggableMovie = forwardRef((props: MovieCompProps, ref) => {
-                            return (<Draggable comp = {MovieComponent} ref={ref} {...props} id={m.id}></Draggable>);
-                        });
-                        return (<DraggableMovie onMovieClick={onMovieClick} movie = {m}></DraggableMovie>)
-                    })}
-                </div>
-            <Droppable id="show-timeline" >
-                <div className={styles["conf-step__seances"]}>
-                    <div className={styles["conf-step__seances-hall"]}>
-                        <h3 className={styles["conf-step__seances-title"]}>Зал 1</h3>
-                        <Timeline ref={timelineRef} markerProps={markerProps}></Timeline>
-                    </div>
-                </div>
-            </Droppable>
+            <div className={styles["conf-step__movies"]}>
+                {movies.map(m => {
+                    const DraggableMovie = forwardRef((props: MovieCompProps, ref) => {
+                        return (<Draggable comp = {MovieComponent} ref={ref} {...props} id={m.id}></Draggable>);
+                    });
+                    return (<DraggableMovie onMovieClick={onMovieClick} movie = {m}></DraggableMovie>)
+                })}
+            </div>
+            {halls.map(h => {
+                return (
+                    <Droppable id={h.id} hall={h}>
+                        <div className={styles["conf-step__seances"]}>
+                            <div className={styles["conf-step__seances-hall"]}>
+                                <h3 className={styles["conf-step__seances-title"]}>{h.name}</h3>
+                                <Timeline ref={timelineRef} markerProps={markerProps} hall={h}
+                                    seances={seances.filter(s => s.hall.id === h.id)}></Timeline>
+                            </div>
+                        </div>
+                    </Droppable>
+                )
+            })}
             {isActiveMoviePopup
                 ? (<MoviePopup data={currentMovie} isActive={isActiveMoviePopup}
                                saveCallback={saveCallback} cancelCallback={cancelCallback}></MoviePopup>)
@@ -115,9 +142,12 @@ export function Draggable(props: DraggableProps) {
     return (<props.comp ref={setNodeRef} {...listeners} {...attributes} {...props}/>);
 }
 
-export function Droppable(props: any) {
+export function Droppable(props: {id: string, hall: Hall} & any) {
     const {isOver, setNodeRef} = useDroppable({
         id: props.id,
+        data: {
+            hallId: props.hall.id
+        }
     });
     const style = {
         opacity: isOver ? 1 : 1,
@@ -132,40 +162,42 @@ export function Droppable(props: any) {
 type TimelineItemProps = {
     movie: Movie,
     onMovieClick: (movie: Movie) => void
+    color: string
 } & any
 
 const TimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>((props: TimelineItemProps, ref) => {
-    const {movie: m} = props;
+    const {movie: m, color} = props;
     return (
         <div ref={ref} className={styles["conf-step__seances-movie"]}
-             style={{"width": "60px", "backgroundColor": "rgb(133, 255, 137)", "left": "0"}}>
+             style={{"width": `${m.duration ? minuteToPixels(m.duration) : DEFAULT_DURATION}px`, "backgroundColor": `${color}`, "left": "0"}}>
             <p className={styles["conf-step__seances-movie-title"]}>{m.name}</p>
         </div>
     );
 });
 
 type TimelineProps = {
-    markerProps: MarkerProps
+    markerProps: MarkerProps,
+    hall: Hall,
+    seances: Seance[]
 } & any
 
 const Timeline = forwardRef<HTMLDivElement, TimelineProps>((props: TimelineProps, ref) => {
     return (
         <div ref={ref} className={styles["conf-step__seances-timeline"]}>
-            <div className={styles["conf-step__seances-movie"]}
-                 style={{"width": "60px", "backgroundColor": "rgb(133, 255, 137)", "left": "0"}}>
-                <p className={styles["conf-step__seances-movie-title"]}>Миссия выполнима</p>
-                <p className={styles["conf-step__seances-movie-start"]}>00:00</p>
-            </div>
-            <div className={styles["conf-step__seances-movie"]}
-                 style={{"width": "60px", "backgroundColor": "rgb(133, 255, 137)", "left": "360px"}}>
-                <p className={styles["conf-step__seances-movie-title"]}>Миссия выполнима</p>
-                <p className={styles["conf-step__seances-movie-start"]}>12:00</p>
-            </div>
-            <div className={styles["conf-step__seances-movie"]}
-                 style={{"width": "65px", "backgroundColor": "rgb(202, 255, 133)", "left": "420px"}}>
-                <p className={styles["conf-step__seances-movie-title"]}>Звёздные войны XXIII: Атака клонированных клонов</p>
-                <p className={styles["conf-step__seances-movie-start"]}>14:00</p>
-            </div>
+            {props.seances
+                .sort((s1,s2) => new Time().fillFromString(s1.start)
+                    .compare(new Time().fillFromString(s2.start)))
+                .map(s => {
+                    return (
+                        <div className={styles["conf-step__seances-movie"]}
+                             style={{"width": `${minuteToPixels(s.movie.duration)}px`,
+                                 "backgroundColor": "rgb(133, 255, 137)",
+                                 "left": `${minuteToPixels(new Time().fillFromString(s.start).toMinutes())}px`}}>
+                            <p className={styles["conf-step__seances-movie-title"]}>{s.movie.name}</p>
+                            <p className={styles["conf-step__seances-movie-start"]}>{s.start}</p>
+                        </div>
+                    )
+                })}
             {props.markerProps.visible ? (<Marker {...props.markerProps}></Marker>) : null}
         </div>
     )
@@ -177,14 +209,11 @@ type MarkerProps = {
     rect: Rect
 }
 function Marker(props: MarkerProps) {
-    // 1мин = 0,5 пикс
-    const allMm = (props.rect.left - props.bounds.x) * 2;
-    const hours = Math.floor(allMm / 60);
-    const minutes = Math.floor(allMm - hours * 60);
+    const time = toTimeData(props.bounds, props.rect);
     const left = props.rect.left - props.bounds.x + 1; // 1px бордюр
     return (
         <div className={styles["conf-step__seances-movie"] + " " + styles["marker"]} style={{"left": `${left}px`, "display": "block"}}>
-            <p className={styles["conf-step__seances-movie-start"]}>{formatTime(hours, minutes)}</p>
+            <p className={styles["conf-step__seances-movie-start"]}>{formatTime(time)}</p>
         </div>
     )
 }
@@ -193,4 +222,23 @@ function isInnerBounds(bounds: DOMRect, rect: ClientRect) {
     return !!bounds && !!rect
         && rect.left >= bounds.x && rect.left <= bounds.x + bounds.width
         && rect.top >= bounds.y && rect.top <= bounds.y + bounds.height;
+}
+
+function minuteToPixels(mm: number): number {
+    return +Number(mm * MINUTE_TO_PX).toFixed(0);
+}
+
+function toTimeData(bounds: DOMRect, rect: ClientRect): TimeData {
+    const allMm = (rect.left - bounds.x)  / MINUTE_TO_PX;
+    const hours = Math.floor(allMm / 60);
+    const minutes = Math.floor(allMm - hours * 60);
+    return {hours, minutes} as TimeData;
+}
+
+function createSeanceData(hall: Hall, movie: Movie, timeData: TimeData): SeanceData {
+    return {
+        hall: hall,
+        movie: movie,
+        start: timeData
+    } as SeanceData;
 }

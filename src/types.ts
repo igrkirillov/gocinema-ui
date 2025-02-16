@@ -97,3 +97,30 @@ export type MovieParameters = {
     country: string,
     duration: number
 }
+
+export type TimeData = {
+    hours: number,
+    minutes: number
+}
+
+export type Seance = {
+    id: number,
+    hall: Hall,
+    movie: Movie,
+    start: string
+}
+
+export type SeanceData = {
+    id: number | null,
+    hall: Hall,
+    movie: Movie,
+    start: TimeData,
+}
+
+export type SeanceParameters = {
+    hallId: number,
+    movieId: number,
+    start: string
+}
+
+export type SeancesState = ArrayDataState<Seance>
