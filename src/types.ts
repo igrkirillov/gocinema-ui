@@ -7,8 +7,11 @@ export type Movie = {
     duration: number
 }
 
-type ArrayDataState<T> = {
+type ArrayDataState<T> = LoadingState & {
     data: T[],
+}
+
+type LoadingState = {
     loading: boolean,
     error: string | null
 }
@@ -130,4 +133,8 @@ export type CurrentTimelineData = {
     changed: SeanceData[],
     deleted: SeanceData[],
     added: SeanceData[]
+}
+
+export type SaleOptionsState = LoadingState & {
+    isSaleOpened: boolean | undefined
 }
