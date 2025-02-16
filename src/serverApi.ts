@@ -158,7 +158,7 @@ export async function patchSeance(data: SeanceData): Promise<void> {
     }
 }
 
-export async function deleteSeance(id: number): Promise<Seance> {
+export async function deleteSeance(id: number): Promise<void> {
     const response = await fetch(config.serverUrl + "/movie-shows/" + id,
         {
             method: "DELETE",
@@ -166,9 +166,7 @@ export async function deleteSeance(id: number): Promise<Seance> {
                 'Content-Type': 'application/json'
             },
         });
-    if (response.ok) {
-        return await response.json() as Seance;
-    } else {
+    if (!response.ok) {
         throw Error(response.statusText);
     }
 }

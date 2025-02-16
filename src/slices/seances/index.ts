@@ -46,14 +46,14 @@ export const seancesSlice = createSliceWithThunk({
         saveCurrentTimeline: create.asyncThunk<Seance[], CurrentTimelineData>(
             async  (currentTimeline, thunkApi) => {
                 try {
-                    for (let i = 0; i < currentTimeline.added.length; ++i) {
-                        await saveNewSeance(currentTimeline.added[i]);
+                    for (let add of currentTimeline.added) {
+                        await saveNewSeance(add);
                     }
-                    for (let i = 0; i < currentTimeline.changed.length; ++i) {
-                        await patchSeance(currentTimeline.changed[i]);
+                    for (let ch of currentTimeline.changed) {
+                        await patchSeance(ch);
                     }
-                    for (let i = 0; i < currentTimeline.deleted.length; ++i) {
-                        await deleteSeance(currentTimeline.deleted[i].id as number);
+                    for (let del of currentTimeline.deleted) {
+                        await deleteSeance(del.id as number);
                     }
                     return await getSeances();
                 } catch (e) {
