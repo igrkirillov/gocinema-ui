@@ -60,9 +60,13 @@ export class CurrentTimeline {
 
     addChange(data: SeanceData): CurrentTimeline {
         if (!data.id) {
-            this.added.push(data);
+            if (!this.added.includes(data)) {
+                this.added.push(data);
+            }
         } else {
-            this.changed.push(data);
+            if (!this.changed.includes(data)) {
+                this.changed.push(data);
+            }
         }
         return this;
     }
