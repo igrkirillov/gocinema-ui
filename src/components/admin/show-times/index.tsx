@@ -1,14 +1,15 @@
 import styles from "../styles.module.scss"
 import "../normalize.css"
-import {Component, forwardRef, MouseEvent, useEffect, useState} from "react";
+import React, {Component, forwardRef, MouseEvent, useEffect, useRef, useState} from "react";
 import {MoviePopup} from "../movie-popup";
 import {Movie, MovieData} from "../../../types";
 import {useAppDispatch, useAppSelector} from "../../../hooks";
 import {fetchMovies, moviesState, saveMovie} from "../../../slices/movies";
 import moviePoster from "../../../assets/poster.png"
 import {toMovieData} from "../../../data/dataUtils";
-import {DndContext, DragOverlay, useDraggable, useDroppable} from "@dnd-kit/core";
-import {DragStartEvent} from "@dnd-kit/core/dist/types";
+import {DndContext, DragMoveEvent, DragOverEvent, DragOverlay, useDraggable, useDroppable} from "@dnd-kit/core";
+import {ClientRect, DragStartEvent} from "@dnd-kit/core/dist/types";
+import {SortableContext} from "@dnd-kit/sortable";
 
 export function ShowTimes() {
     const [isActiveMoviePopup, setActiveMoviePopup] = useState(false);
@@ -40,9 +41,14 @@ export function ShowTimes() {
     function handleDragEnd() {
         setDraggingMovie(null);
     }
+    function handleDragMove(event: DragMoveEvent) {
+        updateTimle(timelineRef.current as HTMLDivElement, markerRef.current as HTMLDivElement, event);
+    }
     const [draggingMovie, setDraggingMovie] = useState(null as Movie | null);
+    const timelineRef = React.createRef<HTMLDivElement>();
+    const markerRef = React.createRef<HTMLDivElement>();
     return (
-        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragMove={handleDragMove}>
             <DragOverlay>
                 {draggingMovie ?
                 (<TimelineItem movie={draggingMovie}></TimelineItem>) : null}
@@ -59,27 +65,11 @@ export function ShowTimes() {
                         return (<DraggableMovie onMovieClick={onMovieClick} movie = {m}></DraggableMovie>)
                     })}
                 </div>
-            <Droppable id="show-timeline">
+            <Droppable id="show-timeline" >
                 <div className={styles["conf-step__seances"]}>
                     <div className={styles["conf-step__seances-hall"]}>
                         <h3 className={styles["conf-step__seances-title"]}>Зал 1</h3>
-                        <div className={styles["conf-step__seances-timeline"]}>
-                            <div className={styles["conf-step__seances-movie"]}
-                                 style={{"width": "60px", "backgroundColor": "rgb(133, 255, 137)", "left": "0"}}>
-                                <p className={styles["conf-step__seances-movie-title"]}>Миссия выполнима</p>
-                                <p className={styles["conf-step__seances-movie-start"]}>00:00</p>
-                            </div>
-                            <div className={styles["conf-step__seances-movie"]}
-                                 style={{"width": "60px", "backgroundColor": "rgb(133, 255, 137)", "left": "360px"}}>
-                                <p className={styles["conf-step__seances-movie-title"]}>Миссия выполнима</p>
-                                <p className={styles["conf-step__seances-movie-start"]}>12:00</p>
-                            </div>
-                            <div className={styles["conf-step__seances-movie"]}
-                                 style={{"width": "65px", "backgroundColor": "rgb(202, 255, 133)", "left": "420px"}}>
-                                <p className={styles["conf-step__seances-movie-title"]}>Звёздные войны XXIII: Атака клонированных клонов</p>
-                                <p className={styles["conf-step__seances-movie-start"]}>14:00</p>
-                            </div>
-                        </div>
+                        <Timeline ref={timelineRef} markerRef={markerRef}></Timeline>
                     </div>
                 </div>
             </Droppable>
@@ -136,14 +126,60 @@ export function Droppable(props: any) {
 }
 
 type TimelineItemProps = {
-    movie: Movie
+    movie: Movie,
+    onMovieClick: (movie: Movie) => void
 } & any
 
-const TimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(({ movie: m, onMovieClick, ...props }: TimelineItemProps, ref) => {
+const TimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>((props: TimelineItemProps, ref) => {
+    const {movie: m} = props;
     return (
-        <div className={styles["conf-step__seances-movie"]}
+        <div ref={ref} className={styles["conf-step__seances-movie"]}
              style={{"width": "60px", "backgroundColor": "rgb(133, 255, 137)", "left": "0"}}>
             <p className={styles["conf-step__seances-movie-title"]}>{m.name}</p>
         </div>
     );
 });
+
+type TimelineProps = {
+    markerRef: React.RefObject<HTMLDivElement>
+} & any
+
+const Timeline = forwardRef<HTMLDivElement, TimelineProps>((props: TimelineProps, ref) => {
+    return (
+        <div ref={ref} className={styles["conf-step__seances-timeline"]}>
+            <div className={styles["conf-step__seances-movie"]}
+                 style={{"width": "60px", "backgroundColor": "rgb(133, 255, 137)", "left": "0"}}>
+                <p className={styles["conf-step__seances-movie-title"]}>Миссия выполнима</p>
+                <p className={styles["conf-step__seances-movie-start"]}>00:00</p>
+            </div>
+            <div className={styles["conf-step__seances-movie"]}
+                 style={{"width": "60px", "backgroundColor": "rgb(133, 255, 137)", "left": "360px"}}>
+                <p className={styles["conf-step__seances-movie-title"]}>Миссия выполнима</p>
+                <p className={styles["conf-step__seances-movie-start"]}>12:00</p>
+            </div>
+            <div className={styles["conf-step__seances-movie"]}
+                 style={{"width": "65px", "backgroundColor": "rgb(202, 255, 133)", "left": "420px"}}>
+                <p className={styles["conf-step__seances-movie-title"]}>Звёздные войны XXIII: Атака клонированных клонов</p>
+                <p className={styles["conf-step__seances-movie-start"]}>14:00</p>
+            </div>
+            <div ref={props.markerRef} className={styles["conf-step__seances-movie"]}
+                 style={{"width": "65px", "left": "0px", "display": "none"}}>
+                <p className={styles["conf-step__seances-movie-start"]}>00:00</p>
+            </div>
+        </div>
+    )
+})
+
+function updateTimle(timeline: HTMLDivElement, marker: HTMLDivElement, event: DragMoveEvent) {
+    console.debug(timeline)
+    console.debug(event.active.rect.current.translated);
+    if (isInnerBounds(timeline.getBoundingClientRect(), event.active.rect.current.translated)) {
+        console.log("is inner bounds")
+        marker.style = {"width": "65px", "left": "200px", "display": "block"}
+    }
+}
+
+function isInnerBounds(bounds: DOMRect, rect: ClientRect) {
+    return rect.left >= bounds.x && rect.left <= bounds.x + bounds.width
+        && rect.top >= bounds.y && rect.top <= bounds.y + bounds.height;
+}
