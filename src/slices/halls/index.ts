@@ -1,6 +1,6 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
 import {CurrentHallData, CurrentPricingData, Hall, HallsState} from "../../types";
-import {createNextHall, deleteHallById, getAllHalls, saveHall, savePricing} from "../../serverApi";
+import {createNextHall, deleteHallById, getHalls, patchHall, savePricing} from "../../serverApi";
 import {getHallByIdOrThrow} from "../../data/dataUtils";
 
 const createSliceWithThunk = buildCreateSlice({
@@ -26,7 +26,7 @@ export const hallsSlice = createSliceWithThunk({
         fetchHalls: create.asyncThunk<Hall[]>(
             async  (__, thunkApi) => {
                 try {
-                    return await getAllHalls();
+                    return await getHalls();
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
@@ -50,7 +50,7 @@ export const hallsSlice = createSliceWithThunk({
             async  (hallId, thunkApi) => {
                 try {
                     await deleteHallById(hallId);
-                    return await getAllHalls();
+                    return await getHalls();
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
@@ -74,7 +74,7 @@ export const hallsSlice = createSliceWithThunk({
             async  (allHalls, thunkApi) => {
                 try {
                     await createNextHall(allHalls);
-                    return await getAllHalls();
+                    return await getHalls();
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
@@ -112,9 +112,9 @@ export const hallsSlice = createSliceWithThunk({
             async  (currentHall, thunkApi) => {
                 try {
                     // @ts-ignore
-                    await saveHall(currentHall, getHallByIdOrThrow(currentHall.id,
+                    await patchHall(currentHall, getHallByIdOrThrow(currentHall.id,
                         (thunkApi.getState()["halls"] as HallsState).data));
-                    return getHallByIdOrThrow(currentHall.id, await getAllHalls());
+                    return getHallByIdOrThrow(currentHall.id, await getHalls());
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
@@ -157,7 +157,7 @@ export const hallsSlice = createSliceWithThunk({
                     // @ts-ignore
                     const hall = getHallByIdOrThrow(currentPricing.id, (thunkApi.getState()["halls"] as HallsState).data);
                     await savePricing(currentPricing, hall);
-                    return getHallByIdOrThrow(currentPricing.id, await getAllHalls());
+                    return getHallByIdOrThrow(currentPricing.id, await getHalls());
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }

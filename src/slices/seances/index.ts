@@ -1,7 +1,7 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
 import {CurrentTimelineData, Seance, SeanceData, SeancesState} from "../../types";
 import config from "../../../config/app.json"
-import {saveNewSeance} from "../../serverApi";
+import {deleteSeance, getSeances, patchSeance, saveNewSeance} from "../../serverApi";
 
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
@@ -23,12 +23,7 @@ export const seancesSlice = createSliceWithThunk({
         fetchSeances: create.asyncThunk<Seance[]>(
             async  (__, thunkApi) => {
                 try {
-                    const response = await fetch(config.serverUrl + "/movie-shows", {method: "GET"});
-                    if (response.ok) {
-                        return (await response.json()) as Seance[];
-                    } else {
-                        return thunkApi.rejectWithValue(response.statusText);
-                    }
+                    return await getSeances();
                 } catch (e) {
                     return thunkApi.rejectWithValue(e);
                 }
@@ -51,11 +46,16 @@ export const seancesSlice = createSliceWithThunk({
         saveCurrentTimeline: create.asyncThunk<Seance[], CurrentTimelineData>(
             async  (currentTimeline, thunkApi) => {
                 try {
-                    const actual = [] as Seance[];
                     for (let i = 0; i < currentTimeline.added.length; ++i) {
-                        actual.push(await saveNewSeance(currentTimeline.added[i]));
+                        await saveNewSeance(currentTimeline.added[i]);
                     }
-                    return actual;
+                    for (let i = 0; i < currentTimeline.changed.length; ++i) {
+                        await patchSeance(currentTimeline.changed[i]);
+                    }
+                    for (let i = 0; i < currentTimeline.deleted.length; ++i) {
+                        await deleteSeance(currentTimeline.deleted[i].id as number);
+                    }
+                    return await getSeances();
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }

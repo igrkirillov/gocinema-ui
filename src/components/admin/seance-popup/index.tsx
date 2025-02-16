@@ -12,8 +12,9 @@ export function SeancePopup(props: {
     data: SeanceData,
     isActive: boolean,
     saveCallback: (data: SeanceData) => void,
+    deleteCallback: (data: SeanceData) => void,
     cancelCallback: () => void}) {
-    const {data, isActive, saveCallback, cancelCallback} = props;
+    const {data, isActive, saveCallback, cancelCallback, deleteCallback} = props;
     const {data: movies} = useAppSelector(moviesState)
     const {data: halls} = useAppSelector(hallsState)
     const onSubmitForm = (event: FormEvent<HTMLFormElement>) => {
@@ -32,6 +33,10 @@ export function SeancePopup(props: {
     const onCloseLinkClick = (event: MouseEvent<HTMLAnchorElement>) => {
         event.preventDefault();
         cancelCallback();
+    }
+    const onDeleteButtonClick = (event: MouseEvent<HTMLInputElement>) => {
+        event.preventDefault();
+        deleteCallback(data);
     }
     const selectMoviesRef = useRef<HTMLSelectElement>(null);
     useEffect(() => {
@@ -80,6 +85,11 @@ export function SeancePopup(props: {
                             <div className={styles["conf-step__buttons"] + " " + styles["text-center"]}>
                                 <input type="submit" value={data.id ? "Сохранить фильм" : "Добавить фильм"}
                                        className={styles["conf-step__button"] + " " + styles["conf-step__button-accent"]} data-event="film_add"></input>
+                                {data.id ? (
+                                    <input type="submit" value="Снять сеанс"
+                                           className={styles["conf-step__button"] + " " + styles["conf-step__button-accent"]}
+                                        onClick={onDeleteButtonClick}></input>
+                                ) : null}
                                 <button className={styles["conf-step__button"] + " " +styles["conf-step__button-regular"]} type="button"
                                         onClick={onCancelButtonClick}>Отменить</button>
                             </div>

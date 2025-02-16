@@ -11,7 +11,7 @@ import {
 } from "./types";
 import {formatTime} from "./data/dataUtils";
 
-export async function getAllHalls(): Promise<Hall[]> {
+export async function getHalls(): Promise<Hall[]> {
     const response = await fetch(config.serverUrl + "/halls", {method: "GET"});
     if (response.ok) {
         return await response.json() as Hall[];
@@ -45,7 +45,7 @@ export async function createNextHall(allHalls: Hall[]): Promise<Hall> {
     }
 }
 
-export async function saveHall(currentHall: CurrentHallData, hall: Hall): Promise<void> {
+export async function patchHall(currentHall: CurrentHallData, hall: Hall): Promise<void> {
     const response = await fetch(config.serverUrl + "/halls/" + currentHall.id,
         {
             method: "PATCH",
@@ -135,6 +135,48 @@ export async function saveNewSeance(data: SeanceData): Promise<Seance> {
         });
     if (response.ok) {
         return await response.json() as Seance;
+    } else {
+        throw Error(response.statusText);
+    }
+}
+
+export async function patchSeance(data: SeanceData): Promise<void> {
+    const response = await fetch(config.serverUrl + "/movie-shows/" + data.id,
+        {
+            method: "PATCH",
+            body: JSON.stringify({
+                hallId: data.hall.id,
+                movieId: data.movie.id,
+                start: formatTime(data.start)
+            } as SeanceParameters),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+    if (!response.ok) {
+        throw Error(response.statusText);
+    }
+}
+
+export async function deleteSeance(id: number): Promise<Seance> {
+    const response = await fetch(config.serverUrl + "/movie-shows/" + id,
+        {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+    if (response.ok) {
+        return await response.json() as Seance;
+    } else {
+        throw Error(response.statusText);
+    }
+}
+
+export async function getSeances(): Promise<Seance[]> {
+    const response = await fetch(config.serverUrl + "/movie-shows", {method: "GET"});
+    if (response.ok) {
+        return await response.json() as Seance[];
     } else {
         throw Error(response.statusText);
     }

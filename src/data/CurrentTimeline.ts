@@ -61,11 +61,14 @@ export class CurrentTimeline {
     addChange(data: SeanceData): CurrentTimeline {
         if (!data.id) {
             this.added.push(data);
-        } else if (data.start === null) {
-            this.deleted.push(data);
         } else {
             this.changed.push(data);
         }
+        return this;
+    }
+
+    addDelete(data: SeanceData): CurrentTimeline {
+        this.deleted.push(data);
         return this;
     }
 }

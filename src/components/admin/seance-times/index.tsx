@@ -47,6 +47,10 @@ export function SeanceTimes() {
         setCurrentTimeline(new CurrentTimeline().fromData(currentTimeline).addChange(data).serialize());
         setActiveSeancePopup(false);
     }
+    const deleteSeanceCallback = (data: SeanceData): void => {
+        setCurrentTimeline(new CurrentTimeline().fromData(currentTimeline).addDelete(data).serialize());
+        setActiveSeancePopup(false);
+    }
     const cancelSeanceCallback = () => {
         setActiveSeancePopup(false);
     }
@@ -64,7 +68,6 @@ export function SeanceTimes() {
     }
     const onSaveClick = ():void => {
         dispatch(saveCurrentTimeline(currentTimeline))
-        setCurrentTimeline(new CurrentTimeline().fromSeances(seances).serialize());
     }
     const onCancelClick = ():void => {
         setCurrentTimeline(new CurrentTimeline().fromSeances(seances).serialize());
@@ -147,7 +150,8 @@ export function SeanceTimes() {
             </fieldset>
             {isActiveSeancePopup
                 ? (<SeancePopup data={currentSeance} isActive={isActiveSeancePopup}
-                               saveCallback={saveSeanceCallback} cancelCallback={cancelSeanceCallback}></SeancePopup>)
+                               saveCallback={saveSeanceCallback} cancelCallback={cancelSeanceCallback}
+                               deleteCallback={deleteSeanceCallback}></SeancePopup>)
                 : (<></>)}
             {isActiveMoviePopup
                 ? (<MoviePopup data={currentMovie} isActive={isActiveMoviePopup}
