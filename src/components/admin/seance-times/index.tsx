@@ -120,7 +120,7 @@ export function SeanceTimes() {
                                         .compare(new Time().fillFromTimeData(s2.start)))
                                     .map(s => {
                                         return (
-                                            <div id={"Seance-" + s.id}
+                                            <div key={formatTime(s.start)}
                                                  className={styles["conf-step__seances-movie"]}
                                                  onClick={(event: MouseEvent<HTMLDivElement>) => {
                                                      event.preventDefault();
