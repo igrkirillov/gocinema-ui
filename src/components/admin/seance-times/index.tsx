@@ -2,22 +2,24 @@ import styles from "../styles.module.scss"
 import "../normalize.css"
 import {MouseEvent, useEffect, useState} from "react";
 import {MoviePopup} from "../movie-popup";
-import {Movie, MovieData, Seance, SeanceData} from "../../../types";
+import {CurrentTimelineData, Movie, MovieData, Seance, SeanceData} from "../../../types";
 import {useAppDispatch, useAppSelector} from "../../../hooks";
 import {fetchMovies, moviesState, saveMovie} from "../../../slices/movies";
 import moviePoster from "../../../assets/poster.png"
-import {toMovieData, toSeanceData} from "../../../data/dataUtils";
+import {formatTime, toMovieData, toSeanceData} from "../../../data/dataUtils";
 import {MINUTE_TO_PX} from "../../../constants";
-import {fetchSeances, saveSeance, seancesState} from "../../../slices/seances";
+import {fetchSeances, saveCurrentTimeline, saveSeance, seancesState} from "../../../slices/seances";
 import {hallsState} from "../../../slices/halls";
 import {Time} from "../../../data/Time";
 import {SeancePopup} from "../seance-popup";
+import {CurrentTimeline} from "../../../data/CurrentTimeline";
 
 export function SeanceTimes() {
     const [isActiveMoviePopup, setActiveMoviePopup] = useState(false);
     const [isActiveSeancePopup, setActiveSeancePopup] = useState(false);
     const [currentMovie, setCurrentMovie] = useState({} as MovieData);
     const [currentSeance, setCurrentSeance] = useState({} as SeanceData);
+    const [currentTimeline, setCurrentTimeline] = useState(new CurrentTimeline().serialize());
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(fetchMovies());
@@ -26,6 +28,9 @@ export function SeanceTimes() {
     const {data: movies, error: moviesError} = useAppSelector(moviesState);
     const {data: seances, error: seancesError} = useAppSelector(seancesState);
     const {data: halls, error: hallsError} = useAppSelector(hallsState);
+    useEffect(() => {
+        setCurrentTimeline(new CurrentTimeline().fromSeances(seances).serialize());
+    }, [seances])
     const onAddButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         setCurrentMovie({} as MovieData);
@@ -39,7 +44,7 @@ export function SeanceTimes() {
         setActiveMoviePopup(false);
     }
     const saveSeanceCallback = (data: SeanceData): void => {
-        dispatch(saveSeance(data))
+        setCurrentTimeline(new CurrentTimeline().fromData(currentTimeline).addChange(data).serialize());
         setActiveSeancePopup(false);
     }
     const cancelSeanceCallback = () => {
@@ -49,13 +54,20 @@ export function SeanceTimes() {
         setCurrentMovie(toMovieData(movie));
         setActiveMoviePopup(true);
     }
-    const onSeanceClick = (seance: Seance): void => {
-        setCurrentSeance(toSeanceData(seance));
+    const onSeanceClick = (seance: SeanceData): void => {
+        setCurrentSeance(seance);
         setActiveSeancePopup(true);
     }
     const onNewSeanceClick = (): void => {
         setCurrentSeance(toSeanceData(null));
         setActiveSeancePopup(true);
+    }
+    const onSaveClick = ():void => {
+        dispatch(saveCurrentTimeline(currentTimeline))
+        setCurrentTimeline(new CurrentTimeline().fromSeances(seances).serialize());
+    }
+    const onCancelClick = ():void => {
+        setCurrentTimeline(new CurrentTimeline().fromSeances(seances).serialize());
     }
 
     const [colorsMap, setColorsMap] = useState({})
@@ -68,7 +80,9 @@ export function SeanceTimes() {
             colorsMap[String(m.id)] = color;
         })
         setColorsMap(colorsMap);
-    }, [movies, seances])
+    }, [movies, currentTimeline])
+
+    const isButtonsEnabled = new CurrentTimeline().fromData(currentTimeline).hasChanges();
 
     return (
         <>
@@ -97,10 +111,10 @@ export function SeanceTimes() {
                                         onNewSeanceClick();
                                     }
                             }>
-                                {seances
+                                {new CurrentTimeline().fromData(currentTimeline).getActualSeances()
                                     .filter(s => s.hall.id === h.id)
-                                    .sort((s1,s2) => new Time().fillFromString(s1.start)
-                                        .compare(new Time().fillFromString(s2.start)))
+                                    .sort((s1,s2) => new Time().fillFromTimeData(s1.start)
+                                        .compare(new Time().fillFromTimeData(s2.start)))
                                     .map(s => {
                                         return (
                                             <div id={"Seance-" + s.id}
@@ -112,9 +126,9 @@ export function SeanceTimes() {
                                                  }}
                                                  style={{"width": `${minuteToPixels(s.movie.duration)}px`,
                                                      "backgroundColor": `${colorsMap[String(s.movie.id)]}`,
-                                                     "left": `${minuteToPixels(new Time().fillFromString(s.start).toMinutes())}px`}}>
+                                                     "left": `${minuteToPixels(new Time().fillFromTimeData(s.start).toMinutes())}px`}}>
                                                 <p className={styles["conf-step__seances-movie-title"]}>{s.movie.name}</p>
-                                                <p className={styles["conf-step__seances-movie-start"]}>{s.start}</p>
+                                                <p className={styles["conf-step__seances-movie-start"]}>{formatTime(s.start)}</p>
                                             </div>
                                         )
                                     })}
@@ -123,6 +137,14 @@ export function SeanceTimes() {
                     </div>
                 )
             })}
+            <fieldset className={styles["conf-step__buttons"] + " " + styles["text-center"]}>
+                <button className={styles["conf-step__button"] + " " + styles["conf-step__button-regular"]}
+                        disabled={!isButtonsEnabled}
+                        onClick={onCancelClick}>Отмена</button>
+                <input type="submit" value="Сохранить" className={styles["conf-step__button"] + " " + styles["conf-step__button-accent"]}
+                       disabled={!isButtonsEnabled}
+                       onClick={onSaveClick}></input>
+            </fieldset>
             {isActiveSeancePopup
                 ? (<SeancePopup data={currentSeance} isActive={isActiveSeancePopup}
                                saveCallback={saveSeanceCallback} cancelCallback={cancelSeanceCallback}></SeancePopup>)

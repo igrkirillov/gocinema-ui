@@ -124,3 +124,10 @@ export type SeanceParameters = {
 }
 
 export type SeancesState = ArrayDataState<Seance>
+
+export type CurrentTimelineData = {
+    seances: Seance[],
+    changed: SeanceData[],
+    deleted: SeanceData[],
+    added: SeanceData[]
+}

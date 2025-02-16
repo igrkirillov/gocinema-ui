@@ -1,5 +1,5 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {Seance, SeanceData, SeancesState} from "../../types";
+import {CurrentTimelineData, Seance, SeanceData, SeancesState} from "../../types";
 import config from "../../../config/app.json"
 import {saveNewSeance} from "../../serverApi";
 
@@ -48,10 +48,14 @@ export const seancesSlice = createSliceWithThunk({
                     state.loading = false;
                 }
             }),
-        saveSeance: create.asyncThunk<Seance, SeanceData>(
-            async  (seanceData, thunkApi) => {
+        saveCurrentTimeline: create.asyncThunk<Seance[], CurrentTimelineData>(
+            async  (currentTimeline, thunkApi) => {
                 try {
-                    return await saveNewSeance(seanceData);
+                    const actual = [] as Seance[];
+                    for (let i = 0; i < currentTimeline.added.length; ++i) {
+                        actual.push(await saveNewSeance(currentTimeline.added[i]));
+                    }
+                    return actual;
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
@@ -61,8 +65,9 @@ export const seancesSlice = createSliceWithThunk({
                     state.loading = true;
                     state.error = null;
                 },
-                fulfilled: (state, action: PayloadAction<Seance>) => {
-                    state.data.push(action.payload);
+                fulfilled: (state, action: PayloadAction<Seance[]>) => {
+                    state.data = [];
+                    state.data.push(...action.payload);
                 },
                 rejected: (state, action) => {
                     state.error = action.payload as string;
@@ -74,5 +79,5 @@ export const seancesSlice = createSliceWithThunk({
     })
 })
 
-export const {fetchSeances, saveSeance} = seancesSlice.actions;
+export const {fetchSeances, saveCurrentTimeline} = seancesSlice.actions;
 export const {seancesState} = seancesSlice.selectors;
