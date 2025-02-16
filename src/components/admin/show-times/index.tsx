@@ -8,6 +8,7 @@ import {fetchMovies, moviesState, saveMovie} from "../../../slices/movies";
 import moviePoster from "../../../assets/poster.png"
 import {toMovieData} from "../../../data/dataUtils";
 import {DndContext, DragOverlay, useDraggable, useDroppable} from "@dnd-kit/core";
+import {DragStartEvent} from "@dnd-kit/core/dist/types";
 
 export function ShowTimes() {
     const [isActiveMoviePopup, setActiveMoviePopup] = useState(false);
@@ -33,22 +34,18 @@ export function ShowTimes() {
         setCurrentMovie(toMovieData(movie));
         setActiveMoviePopup(true);
     }
-    function handleDragStart() {
-        setIsDragging(true);
+    function handleDragStart(event: DragStartEvent) {
+        setDraggingMovie(movies.find(m => m.id === Number(event.active.id)) || null);
     }
     function handleDragEnd() {
-        setIsDragging(false);
+        setDraggingMovie(null);
     }
-    const [isDragging, setIsDragging] = useState(false);
+    const [draggingMovie, setDraggingMovie] = useState(null as Movie | null);
     return (
         <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
             <DragOverlay>
-                {isDragging ?
-                (<div>
-                    <img className={styles["conf-step__movie-poster"]} alt="poster" src={moviePoster}></img>
-                    <h3 className={styles["conf-step__movie-title"]}>34r34r</h3>
-                    <p className={styles["conf-step__movie-duration"]}>43r34r43r43r минут</p>
-                </div>) : null}
+                {draggingMovie ?
+                (<TimelineItem movie={draggingMovie}></TimelineItem>) : null}
             </DragOverlay>
             <p className={styles["conf-step__paragraph"]}>
                 <button className={styles["conf-step__button"] + " " + styles["conf-step__button-accent"]}
@@ -121,12 +118,7 @@ export function Draggable(props: DraggableProps) {
     const {attributes, listeners, setNodeRef} = useDraggable({
         id: props.id,
     });
-
-    return (
-    <props.comp ref={setNodeRef} {...listeners} {...attributes} {...props}>
-
-    </props.comp>
-    );
+    return (<props.comp ref={setNodeRef} {...listeners} {...attributes} {...props}/>);
 }
 
 export function Droppable(props: any) {
@@ -136,10 +128,22 @@ export function Droppable(props: any) {
     const style = {
         opacity: isOver ? 1 : 1,
     };
-
     return (
         <div ref={setNodeRef} style={style}>
             {props.children}
         </div>
     );
 }
+
+type TimelineItemProps = {
+    movie: Movie
+} & any
+
+const TimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>(({ movie: m, onMovieClick, ...props }: TimelineItemProps, ref) => {
+    return (
+        <div className={styles["conf-step__seances-movie"]}
+             style={{"width": "60px", "backgroundColor": "rgb(133, 255, 137)", "left": "0"}}>
+            <p className={styles["conf-step__seances-movie-title"]}>{m.name}</p>
+        </div>
+    );
+});
