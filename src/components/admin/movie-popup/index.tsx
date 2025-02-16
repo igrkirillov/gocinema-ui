@@ -63,9 +63,8 @@ export function MoviePopup(props: {
                                     </label>
                                     <label className={styles["conf-step__label"] + " " + styles["conf-step__label-fullsize"]} htmlFor="description">
                                         Описание фильма
-                                        <textarea className={styles["conf-step__input"]} name="description" required>
-                                            {data.description}
-                                        </textarea>
+                                        <textarea className={styles["conf-step__input"]} name="description" required
+                                            defaultValue={data.description}/>
                                     </label>
                                     <label className={styles["conf-step__label"] + " " + styles["conf-step__label-fullsize"]} htmlFor="country">
                                         Страна

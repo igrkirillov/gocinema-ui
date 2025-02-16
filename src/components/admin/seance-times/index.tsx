@@ -73,9 +73,9 @@ export function SeanceTimes() {
         setCurrentTimeline(new CurrentTimeline().fromSeances(seances).serialize());
     }
 
-    const [colorsMap, setColorsMap] = useState({})
+    const [colorsMap, setColorsMap] = useState({} as ColorsMap)
     useEffect(() => {
-        const colorsMap = {};
+        const colorsMap = {} as ColorsMap;
         movies.forEach(m => {
             const movieDiv = document.getElementById("Movie-" + m.id);
             const color = window.getComputedStyle(movieDiv as HTMLElement, null)
@@ -163,4 +163,8 @@ export function SeanceTimes() {
 
 function minuteToPixels(mm: number): number {
     return +Number(mm * MINUTE_TO_PX).toFixed(0);
+}
+
+type ColorsMap = {
+    [key: string]: string
 }
