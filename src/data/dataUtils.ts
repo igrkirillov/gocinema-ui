@@ -17,3 +17,7 @@ export function toMovieData(movie: Movie | null): MovieData {
         duration: movie.duration
     } : {}) as MovieData;
 }
+
+export function formatTime(h: number, m: number): string {
+    return ('0' + h).slice(-2) + ":" + ('0' + m).slice(-2);
+}

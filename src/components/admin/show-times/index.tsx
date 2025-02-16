@@ -6,10 +6,11 @@ import {Movie, MovieData} from "../../../types";
 import {useAppDispatch, useAppSelector} from "../../../hooks";
 import {fetchMovies, moviesState, saveMovie} from "../../../slices/movies";
 import moviePoster from "../../../assets/poster.png"
-import {toMovieData} from "../../../data/dataUtils";
+import {formatTime, toMovieData} from "../../../data/dataUtils";
 import {DndContext, DragMoveEvent, DragOverEvent, DragOverlay, useDraggable, useDroppable} from "@dnd-kit/core";
 import {ClientRect, DragStartEvent} from "@dnd-kit/core/dist/types";
 import {SortableContext} from "@dnd-kit/sortable";
+import {Rect} from "@dnd-kit/core/dist/utilities";
 
 export function ShowTimes() {
     const [isActiveMoviePopup, setActiveMoviePopup] = useState(false);
@@ -42,11 +43,14 @@ export function ShowTimes() {
         setDraggingMovie(null);
     }
     function handleDragMove(event: DragMoveEvent) {
-        updateTimle(timelineRef.current as HTMLDivElement, markerRef.current as HTMLDivElement, event);
+        const bounds = timelineRef.current?.getBoundingClientRect() as DOMRect;
+        const draggableRect = event.active.rect.current.translated as Rect;
+        const markerVisible = isInnerBounds(bounds, draggableRect);
+        setMarkerProps({visible: markerVisible, bounds: bounds, rect: draggableRect});
     }
     const [draggingMovie, setDraggingMovie] = useState(null as Movie | null);
     const timelineRef = React.createRef<HTMLDivElement>();
-    const markerRef = React.createRef<HTMLDivElement>();
+    const [markerProps, setMarkerProps] = useState<MarkerProps>({} as MarkerProps);
     return (
         <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragMove={handleDragMove}>
             <DragOverlay>
@@ -69,7 +73,7 @@ export function ShowTimes() {
                 <div className={styles["conf-step__seances"]}>
                     <div className={styles["conf-step__seances-hall"]}>
                         <h3 className={styles["conf-step__seances-title"]}>Зал 1</h3>
-                        <Timeline ref={timelineRef} markerRef={markerRef}></Timeline>
+                        <Timeline ref={timelineRef} markerProps={markerProps}></Timeline>
                     </div>
                 </div>
             </Droppable>
@@ -141,7 +145,7 @@ const TimelineItem = forwardRef<HTMLDivElement, TimelineItemProps>((props: Timel
 });
 
 type TimelineProps = {
-    markerRef: React.RefObject<HTMLDivElement>
+    markerProps: MarkerProps
 } & any
 
 const Timeline = forwardRef<HTMLDivElement, TimelineProps>((props: TimelineProps, ref) => {
@@ -162,24 +166,31 @@ const Timeline = forwardRef<HTMLDivElement, TimelineProps>((props: TimelineProps
                 <p className={styles["conf-step__seances-movie-title"]}>Звёздные войны XXIII: Атака клонированных клонов</p>
                 <p className={styles["conf-step__seances-movie-start"]}>14:00</p>
             </div>
-            <div ref={props.markerRef} className={styles["conf-step__seances-movie"]}
-                 style={{"width": "65px", "left": "0px", "display": "none"}}>
-                <p className={styles["conf-step__seances-movie-start"]}>00:00</p>
-            </div>
+            {props.markerProps.visible ? (<Marker {...props.markerProps}></Marker>) : null}
         </div>
     )
 })
 
-function updateTimle(timeline: HTMLDivElement, marker: HTMLDivElement, event: DragMoveEvent) {
-    console.debug(timeline)
-    console.debug(event.active.rect.current.translated);
-    if (isInnerBounds(timeline.getBoundingClientRect(), event.active.rect.current.translated)) {
-        console.log("is inner bounds")
-        marker.style = {"width": "65px", "left": "200px", "display": "block"}
-    }
+type MarkerProps = {
+    visible: boolean,
+    bounds: DOMRect,
+    rect: Rect
+}
+function Marker(props: MarkerProps) {
+    // 1мин = 0,5 пикс
+    const allMm = (props.rect.left - props.bounds.x) * 2;
+    const hours = Math.floor(allMm / 60);
+    const minutes = Math.floor(allMm - hours * 60);
+    const left = props.rect.left - props.bounds.x + 1; // 1px бордюр
+    return (
+        <div className={styles["conf-step__seances-movie"] + " " + styles["marker"]} style={{"left": `${left}px`, "display": "block"}}>
+            <p className={styles["conf-step__seances-movie-start"]}>{formatTime(hours, minutes)}</p>
+        </div>
+    )
 }
 
 function isInnerBounds(bounds: DOMRect, rect: ClientRect) {
-    return rect.left >= bounds.x && rect.left <= bounds.x + bounds.width
+    return !!bounds && !!rect
+        && rect.left >= bounds.x && rect.left <= bounds.x + bounds.width
         && rect.top >= bounds.y && rect.top <= bounds.y + bounds.height;
 }
