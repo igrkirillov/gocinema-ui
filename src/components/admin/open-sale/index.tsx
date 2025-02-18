@@ -28,9 +28,6 @@ export function OpenSale() {
         event.preventDefault();
         dispatch(closeSale());
     }
-    if (loading) {
-        return (<Spinner/>)
-    }
     return error ? (<Error error={error}></Error>) : (
         <div className={styles["text-center"]}>
             {!isSaleOpened

@@ -3,7 +3,7 @@ $font-stack: 'Roboto', sans-serif;
 $lilac: #63536C;
 $lightlilac: #BC95D6;
 $green: #16A6AF;
-$red: #af1653;
+$red: #d23875;
 $black: #000000;
 $white: #FFFFFF;
 $grey: #848484;
@@ -327,8 +327,8 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   background-color: $red;
 
   &:hover,
-  &:focus{
-    background-color: rgba(210, 47, 137);
+  &:focus {
+    background-color: rgb(146, 2, 44);
   }
 }
 

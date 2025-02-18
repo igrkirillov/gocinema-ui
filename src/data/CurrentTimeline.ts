@@ -23,10 +23,22 @@ export class CurrentTimeline {
     }
 
     fromData(data: CurrentTimelineData): CurrentTimeline {
-        this.seances = data.seances;
-        this.changed = data.changed;
-        this.deleted = data.deleted;
-        this.added = data.added;
+        this.seances = [];
+        if (data.seances) {
+            this.seances.push(...data.seances);
+        }
+        this.changed = [];
+        if (data.changed) {
+            this.changed.push(...data.changed);
+        }
+        this.deleted = [];
+        if (data.deleted) {
+            this.deleted.push(...data.deleted)
+        }
+        this.added = [];
+        if (data.added) {
+            this.added.push(...data.added);
+        }
         return this;
     }
 
