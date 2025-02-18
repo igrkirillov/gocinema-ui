@@ -33,7 +33,11 @@ export function OpenSale() {
     }
     return error ? (<Error error={error}></Error>) : (
         <div className={styles["text-center"]}>
-            {!isSaleOpened && isReadyForOpenSale ? (<p className={styles["conf-step__paragraph"]}>Всё готово, теперь можно:</p>) : null}
+            {!isSaleOpened
+                ? (isReadyForOpenSale
+                    ? (<p className={styles["conf-step__paragraph"]}>Всё готово, теперь можно:</p>)
+                    : (<p className={styles["conf-step__paragraph"]}>Действие "Открыть продажи" недоступно - сначала завершите конфигурирование залов</p>))
+                : (<p className={styles["conf-step__paragraph"]}>Чтобы закрыть продажи, нажмите кнопку ниже:</p>)}
             {isSaleOpened
                 ? (
                     <button className={styles["conf-step__button"] + " " + styles["conf-step__button-stop"]}
@@ -43,7 +47,8 @@ export function OpenSale() {
                 )
                 : (
                     <button className={styles["conf-step__button"] + " " + styles["conf-step__button-accent"]}
-                            onClick={onOpenButtonClick}>
+                            onClick={onOpenButtonClick}
+                            disabled={!isReadyForOpenSale}>
                         Открыть продажу билетов
                     </button>
                 )}
