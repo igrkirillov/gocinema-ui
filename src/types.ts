@@ -1,3 +1,5 @@
+import {CurrentTimeline} from "./data/CurrentTimeline";
+
 export type Movie = {
     id: number
     name: string,
@@ -126,7 +128,9 @@ export type SeanceParameters = {
     start: string
 }
 
-export type SeancesState = ArrayDataState<Seance>
+export type SeancesState = ArrayDataState<Seance> & {
+    currentTimeline: CurrentTimelineData
+}
 
 export type CurrentTimelineData = {
     seances: Seance[],
@@ -135,6 +139,6 @@ export type CurrentTimelineData = {
     added: SeanceData[]
 }
 
-export type SaleOptionsState = LoadingState & {
+export type OptionsState = LoadingState & {
     isSaleOpened: boolean | undefined
 }

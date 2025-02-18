@@ -1,7 +1,8 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {CurrentTimelineData, Seance, SeanceData, SeancesState} from "../../types";
+import {CurrentPricingData, CurrentTimelineData, Seance, SeanceData, SeancesState} from "../../types";
 import config from "../../../config/app.json"
 import {deleteSeance, getSeances, patchSeance, saveNewSeance} from "../../serverApi";
+import {CurrentTimeline} from "../../data/CurrentTimeline";
 
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
@@ -10,7 +11,8 @@ const createSliceWithThunk = buildCreateSlice({
 const initialState = {
     data: [],
     loading: false,
-    error: null
+    error: null,
+    currentTimeline: new CurrentTimeline().serialize()
 } as SeancesState;
 
 export const seancesSlice = createSliceWithThunk({
@@ -25,7 +27,7 @@ export const seancesSlice = createSliceWithThunk({
                 try {
                     return await getSeances();
                 } catch (e) {
-                    return thunkApi.rejectWithValue(e);
+                    return thunkApi.rejectWithValue((e as Error).message);
                 }
             },
             {
@@ -76,8 +78,11 @@ export const seancesSlice = createSliceWithThunk({
                     state.loading = false;
                 }
             }),
+        setCurrentTimeline: create.reducer((state, action: PayloadAction<CurrentTimelineData>) => {
+            state.currentTimeline = action.payload ? action.payload : new CurrentTimeline().serialize();
+        }),
     })
 })
 
-export const {fetchSeances, saveCurrentTimeline} = seancesSlice.actions;
+export const {fetchSeances, saveCurrentTimeline, setCurrentTimeline} = seancesSlice.actions;
 export const {seancesState} = seancesSlice.selectors;

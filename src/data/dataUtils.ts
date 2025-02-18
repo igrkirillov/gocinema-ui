@@ -1,5 +1,16 @@
-import {Hall, Movie, MovieData, Seance, SeanceData, TimeData} from "../types";
+import {
+    CurrentHallData,
+    CurrentPricingData,
+    CurrentTimelineData,
+    Hall,
+    Movie,
+    MovieData,
+    Seance,
+    SeanceData,
+    TimeData
+} from "../types";
 import {Time} from "./Time";
+import {CurrentTimeline} from "./CurrentTimeline";
 
 export function getHallByIdOrThrow(id: number | null, halls: Hall[]): Hall {
     const hall = halls.find(h => h.id === id);
@@ -30,4 +41,11 @@ export function toSeanceData(seance: Seance | null): SeanceData {
 
 export function formatTime(data: TimeData): string {
     return data ? ('0' + data.hours).slice(-2) + ":" + ('0' + data.minutes).slice(-2) : "";
+}
+
+export function isAllDataSaved(currentHalls: CurrentHallData[] | null, currentPricings: CurrentPricingData[] | null,
+                               currentTimeline: CurrentTimelineData | null) {
+    return (!currentHalls || currentHalls.length == 0)
+        && (!currentPricings || currentPricings.length == 0)
+        && (!currentTimeline || !new CurrentTimeline().fromData(currentTimeline).hasChanges());
 }

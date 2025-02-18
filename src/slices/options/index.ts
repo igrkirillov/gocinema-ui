@@ -1,6 +1,8 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {SaleOptionsState, User, UsersState} from "../../types";
+import {OptionsState, SaleOptionsState, User, UsersState} from "../../types";
 import config from "../../../config/app.json"
+import {getOption, saveOption} from "../../serverApi";
+import {IS_SALE_OPENED_OPTION} from "../../constants";
 
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
@@ -10,7 +12,11 @@ const initialState = {
     isSaleOpened: undefined,
     loading: false,
     error: null
-} as SaleOptionsState;
+} as OptionsState;
+
+type Options = {
+    isSaleOpened: boolean
+}
 
 export const optionsSlice = createSliceWithThunk({
     name: "options",
@@ -19,17 +25,14 @@ export const optionsSlice = createSliceWithThunk({
         optionsState: (state) => state
     },
     reducers: (create) => ({
-        fetchOptions: create.asyncThunk<User[]>(
+        fetchOptions: create.asyncThunk<Options>(
             async  (__, thunkApi) => {
                 try {
-                    const response = await fetch(config.serverUrl + "/users", {method: "GET"});
-                    if (response.ok) {
-                        return await response.json() as User[];
-                    } else {
-                        return thunkApi.rejectWithValue(response.statusText);
-                    }
+                    return {
+                        isSaleOpened: (await getOption(IS_SALE_OPENED_OPTION)).toLowerCase() === "true"
+                    } as Options
                 } catch (e) {
-                    return thunkApi.rejectWithValue(e);
+                    return thunkApi.rejectWithValue((e as Error).message);
                 }
             },
             {
@@ -37,8 +40,54 @@ export const optionsSlice = createSliceWithThunk({
                     state.loading = true;
                     state.error = null;
                 },
-                fulfilled: (state, action: PayloadAction<User[]>) => {
-                    state.data = action.payload ? action.payload : [] as User[];
+                fulfilled: (state, action: PayloadAction<Options>) => {
+                    state.isSaleOpened = action.payload ? action.payload.isSaleOpened : undefined;
+                },
+                rejected: (state, action) => {
+                    state.error = action.payload as string;
+                },
+                settled: (state) => {
+                    state.loading = false;
+                }
+            }),
+        openSale: create.asyncThunk<void>(
+            async  (__, thunkApi) => {
+                try {
+                    await saveOption(IS_SALE_OPENED_OPTION, "true")
+                } catch (e) {
+                    return thunkApi.rejectWithValue((e as Error).message);
+                }
+            },
+            {
+                pending: (state) => {
+                    state.loading = true;
+                    state.error = null;
+                },
+                fulfilled: (state) => {
+                    state.isSaleOpened = true;
+                },
+                rejected: (state, action) => {
+                    state.error = action.payload as string;
+                },
+                settled: (state) => {
+                    state.loading = false;
+                }
+            }),
+        closeSale: create.asyncThunk<void>(
+            async  (__, thunkApi) => {
+                try {
+                    await saveOption(IS_SALE_OPENED_OPTION, "false")
+                } catch (e) {
+                    return thunkApi.rejectWithValue((e as Error).message);
+                }
+            },
+            {
+                pending: (state) => {
+                    state.loading = true;
+                    state.error = null;
+                },
+                fulfilled: (state) => {
+                    state.isSaleOpened = false;
                 },
                 rejected: (state, action) => {
                     state.error = action.payload as string;
@@ -50,5 +99,5 @@ export const optionsSlice = createSliceWithThunk({
     })
 })
 
-export const {fetchUsers} = usersSlice.actions;
-export const {users, usersState} = usersSlice.selectors;
+export const {fetchOptions, openSale, closeSale} = optionsSlice.actions;
+export const {optionsState} = optionsSlice.selectors;

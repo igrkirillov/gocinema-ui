@@ -30,7 +30,7 @@ export const moviesSlice = createSliceWithThunk({
                         return thunkApi.rejectWithValue(response.statusText);
                     }
                 } catch (e) {
-                    return thunkApi.rejectWithValue(e);
+                    return thunkApi.rejectWithValue((e as Error).message);
                 }
             },
             {

@@ -3,6 +3,7 @@ import {moviesSlice} from "../slices/movies";
 import {usersSlice} from "../slices/users";
 import {hallsSlice} from "../slices/halls";
 import {seancesSlice} from "../slices/seances";
+import {optionsSlice} from "../slices/options";
 
 
 export const store = configureStore({
@@ -10,7 +11,8 @@ export const store = configureStore({
         movies: moviesSlice.reducer,
         users: usersSlice.reducer,
         halls: hallsSlice.reducer,
-        seances: seancesSlice.reducer
+        seances: seancesSlice.reducer,
+        options: optionsSlice.reducer
     },
     devTools: true
 })

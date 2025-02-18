@@ -179,3 +179,26 @@ export async function getSeances(): Promise<Seance[]> {
         throw Error(response.statusText);
     }
 }
+
+export async function getOption(key: string): Promise<string> {
+    const response = await fetch(config.serverUrl + "/app-options/" + key, {method: "GET"});
+    if (response.ok) {
+        return await response.text();
+    } else {
+        throw Error(response.statusText);
+    }
+}
+
+export async function saveOption(key: string, data: string): Promise<void> {
+    const response = await fetch(config.serverUrl + "/app-options/" + key,
+        {
+            method: "POST",
+            body: data,
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+        });
+    if (!response.ok) {
+        throw Error(response.statusText);
+    }
+}

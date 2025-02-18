@@ -2,13 +2,13 @@ import styles from "../styles.module.scss"
 import "../normalize.css"
 import {MouseEvent, useEffect, useState} from "react";
 import {MoviePopup} from "../movie-popup";
-import {CurrentTimelineData, Movie, MovieData, Seance, SeanceData} from "../../../types";
+import {Movie, MovieData, SeanceData} from "../../../types";
 import {useAppDispatch, useAppSelector} from "../../../hooks";
 import {fetchMovies, moviesState, saveMovie} from "../../../slices/movies";
 import moviePoster from "../../../assets/poster.png"
 import {formatTime, toMovieData, toSeanceData} from "../../../data/dataUtils";
 import {MINUTE_TO_PX} from "../../../constants";
-import {fetchSeances, saveCurrentTimeline, saveSeance, seancesState} from "../../../slices/seances";
+import {fetchSeances, saveCurrentTimeline, seancesState, setCurrentTimeline} from "../../../slices/seances";
 import {hallsState} from "../../../slices/halls";
 import {Time} from "../../../data/Time";
 import {SeancePopup} from "../seance-popup";
@@ -19,17 +19,16 @@ export function SeanceTimes() {
     const [isActiveSeancePopup, setActiveSeancePopup] = useState(false);
     const [currentMovie, setCurrentMovie] = useState({} as MovieData);
     const [currentSeance, setCurrentSeance] = useState({} as SeanceData);
-    const [currentTimeline, setCurrentTimeline] = useState(new CurrentTimeline().serialize());
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(fetchMovies());
         dispatch(fetchSeances());
     }, []);
     const {data: movies, error: moviesError} = useAppSelector(moviesState);
-    const {data: seances, error: seancesError} = useAppSelector(seancesState);
+    const {data: seances, currentTimeline, error: seancesError} = useAppSelector(seancesState);
     const {data: halls, error: hallsError} = useAppSelector(hallsState);
     useEffect(() => {
-        setCurrentTimeline(new CurrentTimeline().fromSeances(seances).serialize());
+        dispatch(setCurrentTimeline(new CurrentTimeline().fromSeances(seances).serialize()));
     }, [seances])
     const onAddButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
@@ -44,11 +43,11 @@ export function SeanceTimes() {
         setActiveMoviePopup(false);
     }
     const saveSeanceCallback = (data: SeanceData): void => {
-        setCurrentTimeline(new CurrentTimeline().fromData(currentTimeline).addChange(data).serialize());
+        dispatch(setCurrentTimeline(new CurrentTimeline().fromData(currentTimeline).addChange(data).serialize()));
         setActiveSeancePopup(false);
     }
     const deleteSeanceCallback = (data: SeanceData): void => {
-        setCurrentTimeline(new CurrentTimeline().fromData(currentTimeline).addDelete(data).serialize());
+        dispatch(setCurrentTimeline(new CurrentTimeline().fromData(currentTimeline).addDelete(data).serialize()));
         setActiveSeancePopup(false);
     }
     const cancelSeanceCallback = () => {
@@ -70,7 +69,7 @@ export function SeanceTimes() {
         dispatch(saveCurrentTimeline(currentTimeline))
     }
     const onCancelClick = ():void => {
-        setCurrentTimeline(new CurrentTimeline().fromSeances(seances).serialize());
+        dispatch(setCurrentTimeline(new CurrentTimeline().fromSeances(seances).serialize()));
     }
 
     const [colorsMap, setColorsMap] = useState({} as ColorsMap)
