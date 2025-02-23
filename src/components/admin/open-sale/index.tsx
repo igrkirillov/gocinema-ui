@@ -1,5 +1,5 @@
-import styles from "../styles.module.scss"
-import "../normalize.css"
+import styles from "../css/styles.module.scss"
+import "../css/normalize.css"
 import {useAppDispatch, useAppSelector} from "../../../hooks";
 import {closeSale, fetchOptions, openSale, optionsState} from "../../../slices/options";
 import {Error} from "../../error/Error";

@@ -1,4 +1,4 @@
-import styles from "../styles.module.scss";
+import styles from "../css/styles.module.scss";
 import popupClose from "../../../assets/close.png";
 import {Hall, Movie, SeanceData} from "../../../types";
 import {FormEvent, MouseEvent, useEffect, useRef} from "react";

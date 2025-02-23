@@ -1,4 +1,4 @@
-import styles from "../styles.module.scss"
+import styles from "../css/styles.module.scss"
 import {PropsWithChildren, MouseEvent} from "react";
 
 export function Step(props: PropsWithChildren<{title: string}>) {

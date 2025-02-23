@@ -1,5 +1,5 @@
-import styles from "../styles.module.scss"
-import "../normalize.css"
+import styles from "../css/styles.module.scss"
+import "../css/normalize.css"
 import {MouseEvent, useEffect, useState} from "react";
 import {MoviePopup} from "../movie-popup";
 import {Movie, MovieData, SeanceData} from "../../../types";

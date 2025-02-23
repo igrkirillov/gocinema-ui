@@ -1,4 +1,4 @@
-import styles from "../styles.module.scss"
+import styles from "../css/styles.module.scss"
 export function Header() {
     return (
         <header className={styles["page-header"]}>

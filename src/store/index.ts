@@ -4,6 +4,7 @@ import {usersSlice} from "../slices/users";
 import {hallsSlice} from "../slices/halls";
 import {seancesSlice} from "../slices/seances";
 import {optionsSlice} from "../slices/options";
+import {clientSlice} from "../slices/client";
 
 
 export const store = configureStore({
@@ -12,7 +13,8 @@ export const store = configureStore({
         users: usersSlice.reducer,
         halls: hallsSlice.reducer,
         seances: seancesSlice.reducer,
-        options: optionsSlice.reducer
+        options: optionsSlice.reducer,
+        client: clientSlice.reducer
     },
     devTools: true
 })

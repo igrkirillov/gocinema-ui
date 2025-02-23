@@ -1,4 +1,5 @@
 import {CurrentTimeline} from "./data/CurrentTimeline";
+import {Movie} from "./components/client/movie";
 
 export type Movie = {
     id: number
@@ -141,4 +142,20 @@ export type CurrentTimelineData = {
 
 export type OptionsState = LoadingState & {
     isSaleOpened: boolean | undefined
+}
+
+// client
+
+export type ClientState = ArrayDataState<Seance> & {
+    currentDate: number
+}
+
+export type DayItem = {
+    movie: Movie,
+    halls: Hall[],
+    timesMap: DayTimes
+}
+
+export type DayTimes = {
+    [key: number]: Seance[] //key hallId
 }

@@ -2,8 +2,8 @@ import {useAppDispatch, useAppSelector, useCurrentPricing} from "../../../hooks"
 import {ChangeEvent, MouseEvent, useEffect} from "react";
 import {Error} from "../../error/Error";
 import {cancelCurrentPricing, hallsState, saveCurrentPricing, updateCurrentPricing} from "../../../slices/halls";
-import styles from "../styles.module.scss"
-import "../normalize.css"
+import styles from "../css/styles.module.scss"
+import "../css/normalize.css"
 import {CurrentPricing} from "../../../data/CurrentPricing";
 
 export function Pricing() {

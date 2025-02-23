@@ -1,5 +1,5 @@
 import {Header} from "./header";
-import "./styles.module.scss"
+import "./css/styles.module.scss"
 import {Main} from "./main";
 import {Step} from "./step";
 import {HallControl} from "./hall-control";

@@ -2,8 +2,8 @@ import {useAppDispatch, useAppSelector, useCurrentHall} from "../../../hooks";
 import {ChangeEvent, MouseEvent, useEffect} from "react";
 import {Error} from "../../error/Error";
 import {cancelCurrentHall, hallsState, saveCurrentHall, updateCurrentHall} from "../../../slices/halls";
-import styles from "../styles.module.scss"
-import "../normalize.css"
+import styles from "../css/styles.module.scss"
+import "../css/normalize.css"
 import {CurrentHall} from "../../../data/CurrentHall";
 
 export function HallConfig() {
