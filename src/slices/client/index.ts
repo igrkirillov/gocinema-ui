@@ -22,7 +22,7 @@ export const clientSlice = createSliceWithThunk({
             const movieIds = [...new Set(state.data.map(s => s.movie.id))];
             const movies = movieIds.map(id => state.data.find(s => s.movie.id === id)?.movie);
             return movies.sort((m1, m2) => m1.name.localeCompare(m2.name)).map(m => {
-                const hallIds = [...new Set(state.data.map(s => s.hall.id))];
+                const hallIds = [...new Set(state.data.filter(s => s.movie.id === m.id).map(s => s.hall.id))];
                 const halls = hallIds.map(id => state.data.find(s => s.hall.id === id)?.hall)
                     .sort((h1, h2) => h1.name.localeCompare(h2.name));
                 const timesMap = {} as DayTimes;
