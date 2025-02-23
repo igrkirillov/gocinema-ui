@@ -7,8 +7,19 @@ import {HallConfig} from "./hall-config";
 import {Pricing} from "./pricing";
 import {SeanceTimes} from "./seance-times";
 import {OpenSale} from "./open-sale";
+import {useAuth} from "../../hooks/useAuth";
+import {useNavigate} from "react-router";
+import {useEffect} from "react";
 
 export function Admin() {
+    const {user} = useAuth();
+    const navigate = useNavigate();
+    useEffect(() => {
+        console.log(user)
+        if (!user) {
+            navigate("/login?backUrl=admin");
+        }
+    }, [user])
     return (
         <>
             <Header></Header>

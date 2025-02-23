@@ -2,7 +2,7 @@ import styles from "../css/styles.module.scss";
 import popupClose from "../../../assets/close.png";
 import {Hall, Movie, SeanceData} from "../../../types";
 import {FormEvent, MouseEvent, useEffect, useRef} from "react";
-import {useAppSelector} from "../../../hooks";
+import {useAppSelector} from "../../../hooks/hooks";
 import {moviesState} from "../../../slices/movies";
 import {hallsState} from "../../../slices/halls";
 import {Time} from "../../../data/Time";

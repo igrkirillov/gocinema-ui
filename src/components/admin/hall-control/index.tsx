@@ -1,4 +1,4 @@
-import {useAppDispatch, useAppSelector} from "../../../hooks";
+import {useAppDispatch, useAppSelector} from "../../../hooks/hooks";
 import {MouseEvent, useEffect} from "react";
 import {Error} from "../../error/Error";
 import {createNewHall, deleteHall, fetchHalls, hallsState} from "../../../slices/halls";

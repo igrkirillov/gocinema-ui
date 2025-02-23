@@ -1,4 +1,4 @@
-import {useAppDispatch, useAppSelector, useCurrentPricing} from "../../../hooks";
+import {useAppDispatch, useAppSelector, useCurrentPricing} from "../../../hooks/hooks";
 import {ChangeEvent, MouseEvent, useEffect} from "react";
 import {Error} from "../../error/Error";
 import {cancelCurrentPricing, hallsState, saveCurrentPricing, updateCurrentPricing} from "../../../slices/halls";

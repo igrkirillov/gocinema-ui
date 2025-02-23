@@ -3,7 +3,7 @@ import "../css/normalize.css"
 import {MouseEvent, useEffect, useState} from "react";
 import {MoviePopup} from "../movie-popup";
 import {Movie, MovieData, SeanceData} from "../../../types";
-import {useAppDispatch, useAppSelector} from "../../../hooks";
+import {useAppDispatch, useAppSelector} from "../../../hooks/hooks";
 import {fetchMovies, moviesState, saveMovie} from "../../../slices/movies";
 import moviePoster from "../../../assets/poster.png"
 import {formatTime, toMovieData, toSeanceData} from "../../../data/dataUtils";

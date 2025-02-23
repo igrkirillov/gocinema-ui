@@ -1,4 +1,4 @@
-import {useAppDispatch, useAppSelector, useCurrentHall} from "../../../hooks";
+import {useAppDispatch, useAppSelector, useCurrentHall} from "../../../hooks/hooks";
 import {ChangeEvent, MouseEvent, useEffect} from "react";
 import {Error} from "../../error/Error";
 import {cancelCurrentHall, hallsState, saveCurrentHall, updateCurrentHall} from "../../../slices/halls";

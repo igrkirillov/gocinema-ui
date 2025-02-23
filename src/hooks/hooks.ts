@@ -1,8 +1,8 @@
 import {useDispatch, useSelector, useStore} from 'react-redux'
-import type {AppDispatch, AppStore, RootState} from './store'
+import type {AppDispatch, AppStore, RootState} from './../store'
 import {useState} from "react";
-import {CurrentHall} from "./data/CurrentHall";
-import {CurrentPricing} from "./data/CurrentPricing";
+import {CurrentHall} from "./../data/CurrentHall";
+import {CurrentPricing} from "./../data/CurrentPricing";
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>()
