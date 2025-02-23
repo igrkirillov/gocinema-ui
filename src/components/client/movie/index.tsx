@@ -28,7 +28,8 @@ export function Movie(props: MovieProps) {
                     <ul className={styles["movie-seances__list"]}>
                         {timesMap[h.id].map(s => (
                             <li className={styles["movie-seances__time-block"]}>
-                                <a className={styles["movie-seances__time"]} href="hall.html">{s.start}</a>
+                                <a className={styles["movie-seances__time"]}
+                                   href={"./seances/" + s.id}>{s.start}</a>
                             </li>
                         ))}
                     </ul>
