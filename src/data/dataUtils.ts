@@ -49,3 +49,14 @@ export function isAllDataSaved(currentHalls: CurrentHallData[] | null, currentPr
         && (!currentPricings || currentPricings.length == 0)
         && (!currentTimeline || !new CurrentTimeline().fromData(currentTimeline).hasChanges());
 }
+
+export function getSixDays(date: number): number[] {
+    const days = [];
+    days.push(date)
+    const day = new Date(date);
+    for (let i = 1; i <= 5; ++i) {
+        day.setDate(day.getDate() + 1);
+        days.push(day.getTime())
+    }
+    return days;
+}

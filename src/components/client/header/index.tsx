@@ -1,30 +1,44 @@
 import styles from "../css/styles.module.scss"
+import {useEffect, useState, MouseEvent} from "react";
+import {useAppDispatch, useAppSelector} from "../../../hooks";
+import {clientState, setCurrentDate} from "../../../slices/client";
+import {getSixDays, isToday} from "../../../data/dataUtils";
+import {DAY_NAMES} from "../../../constants";
 export function Header() {
+    const dispatch = useAppDispatch();
+    const {currentDate} = useAppSelector(clientState);
+    useEffect(() => {
+        dispatch(setCurrentDate(new Date().getTime()));
+    }, []);
+    const [days, setDays] = useState(getSixDays(new Date().getTime()));
+    const onDayClick = (event: MouseEvent<HTMLAnchorElement>) => {
+        const day = Number(event.currentTarget.dataset["day"]);
+        dispatch(setCurrentDate(day));
+    }
+    const onNextDaysClick = () => {
+        const lastDay = days[5];
+        setDays(getSixDays(lastDay))
+        dispatch(setCurrentDate(lastDay));
+    }
     return (
         <>
             <header className={styles["page-header"]}>
                 <h1 className={styles["page-header__title"]}>Идём<span>в</span>кино</h1>
             </header>
             <nav className={styles["page-nav"]}>
-                <a className={styles["page-nav__day"] + " " + styles["page-nav__day_today"]} href="#">
-                    <span className={styles["page-nav__day-week"]}>Пн</span><span className={styles["page-nav__day-number"]}>31</span>
-                </a>
-                <a className={styles["page-nav__day"]} href="#">
-                    <span className={styles["page-nav__day-week"]}>Вт</span><span className={styles["page-nav__day-number"]}>1</span>
-                </a>
-                <a className={styles["page-nav__day"] + " " + styles["page-nav__day_chosen"]} href="#">
-                    <span className={styles["page-nav__day-week"]}>Ср</span><span className={styles["page-nav__day-number"]}>2</span>
-                </a>
-                <a className={styles["page-nav__day"]} href="#">
-                    <span className={styles["page-nav__day-week"]}>Чт</span><span className={styles["page-nav__day-number"]}>3</span>
-                </a>
-                <a className={styles["page-nav__day"]} href="#">
-                    <span className={styles["page-nav__day-week"]}>Пт</span><span className={styles["page-nav__day-number"]}>4</span>
-                </a>
-                <a className={styles["page-nav__day"] + " " + styles["page-nav__day_weekend"]} href="#">
-                    <span className={styles["page-nav__day-week"]}>Сб</span><span className={styles["page-nav__day-number"]}>5</span>
-                </a>
-                <a className={styles["page-nav__day"] + " " + styles["page-nav__day_next"]} href="#">
+                {days.map(day => (
+                    <a className={styles["page-nav__day"] + " " +
+                        (new Date(day).getDate() === new Date().getDate() ? styles["page-nav__day_today"] : "") + " " +
+                        (new Date(day).getDate() === new Date(currentDate).getDate() ? styles["page-nav__day_chosen"] : "")}
+                       href="#"
+                       data-day={day}
+                        onClick={onDayClick}>
+                        <span className={styles["page-nav__day-week"]}>{DAY_NAMES[new Date(day).getDay()]}</span>
+                        <span className={styles["page-nav__day-number"]}>{new Date(day).getDate()}</span>
+                    </a>
+                ))}
+                <a className={styles["page-nav__day"] + " " + styles["page-nav__day_next"]} href="#"
+                    onClick={onNextDaysClick}>
                 </a>
             </nav>
         </>
