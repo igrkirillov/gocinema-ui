@@ -1,7 +1,7 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {CurrentPricingData, Movie, MovieData, MoviesState} from "../../types";
-import config from "../../../config/app.json"
-import {saveNewMovie} from "../../serverApi";
+import {Movie, MovieData, MoviesState} from "../../types";
+import {getMovies, saveNewMovie} from "../../serverApi";
+import {getCurrentUser} from "../../store/storeUtils";
 
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
@@ -23,12 +23,8 @@ export const moviesSlice = createSliceWithThunk({
         fetchMovies: create.asyncThunk<Movie[]>(
             async  (__, thunkApi) => {
                 try {
-                    const response = await fetch(config.serverUrl + "/movies", {method: "GET"});
-                    if (response.ok) {
-                        return (await response.json()) as Movie[];
-                    } else {
-                        return thunkApi.rejectWithValue(response.statusText);
-                    }
+                    const currentUser = getCurrentUser(thunkApi.getState());
+                    return await getMovies(currentUser);
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
@@ -51,7 +47,8 @@ export const moviesSlice = createSliceWithThunk({
         saveMovie: create.asyncThunk<Movie, MovieData>(
             async  (movieData, thunkApi) => {
                 try {
-                    return await saveNewMovie(movieData);
+                    const currentUser = getCurrentUser(thunkApi.getState());
+                    return await saveNewMovie(currentUser, movieData);
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }

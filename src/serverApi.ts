@@ -7,12 +7,17 @@ import {
     Movie,
     MovieData,
     MovieParameters,
-    PlaceParameters, Seance, SeanceData, SeanceParameters
+    PlaceParameters, Seance, SeanceData, SeanceParameters, User
 } from "./types";
 import {formatTime} from "./data/dataUtils";
 
-export async function getHalls(): Promise<Hall[]> {
-    const response = await fetch(config.serverUrl + "/halls", {method: "GET"});
+export async function getHalls(user: User): Promise<Hall[]> {
+    const response = await fetch(config.serverUrl + "/halls", {
+        method: "GET",
+        headers: {
+            ...authHeader(user)
+        }
+    });
     if (response.ok) {
         return await response.json() as Hall[];
     } else {
@@ -20,14 +25,19 @@ export async function getHalls(): Promise<Hall[]> {
     }
 }
 
-export async function deleteHallById(hallId: number) {
-    const response = await fetch(config.serverUrl + "/halls/" + hallId, {method: "DELETE"});
+export async function deleteHallById(user: User, hallId: number) {
+    const response = await fetch(config.serverUrl + "/halls/" + hallId, {
+        method: "DELETE",
+        headers: {
+            ...authHeader(user)
+        }
+    });
     if (!response.ok) {
         throw Error(response.statusText);
     }
 }
 
-export async function createNextHall(allHalls: Hall[]): Promise<Hall> {
+export async function createNextHall(user: User, allHalls: Hall[]): Promise<Hall> {
     const maxNumber = allHalls.map(h => Number(h.name.substring(4, h.name.length)))
         .reduce((prev, current) => Math.max(prev, current), 0);
     const response = await fetch(config.serverUrl + "/halls",
@@ -35,7 +45,8 @@ export async function createNextHall(allHalls: Hall[]): Promise<Hall> {
                 method: "POST",
                 body: JSON.stringify({name: `Зал ${maxNumber + 1}`, cols: 0, rows: 0} as HallParameters),
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    ...authHeader(user)
                 },
             });
     if (response.ok) {
@@ -45,7 +56,7 @@ export async function createNextHall(allHalls: Hall[]): Promise<Hall> {
     }
 }
 
-export async function patchHall(currentHall: CurrentHallData, hall: Hall): Promise<void> {
+export async function patchHall(user: User, currentHall: CurrentHallData, hall: Hall): Promise<void> {
     const response = await fetch(config.serverUrl + "/halls/" + currentHall.id,
         {
             method: "PATCH",
@@ -64,7 +75,8 @@ export async function patchHall(currentHall: CurrentHallData, hall: Hall): Promi
                 standardPrice: hall.standardPrice,
                 vipPrice: hall.vipPrice} as HallParameters),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...authHeader(user)
             },
         });
     if (!response.ok) {
@@ -72,7 +84,7 @@ export async function patchHall(currentHall: CurrentHallData, hall: Hall): Promi
     }
 }
 
-export async function savePricing(currentPricing: CurrentPricingData, hall: Hall): Promise<void> {
+export async function savePricing(user: User, currentPricing: CurrentPricingData, hall: Hall): Promise<void> {
     const response = await fetch(config.serverUrl + "/halls/" + currentPricing.id,
         {
             method: "PATCH",
@@ -91,7 +103,8 @@ export async function savePricing(currentPricing: CurrentPricingData, hall: Hall
                 standardPrice: currentPricing.standardPrice,
                 vipPrice: currentPricing.vipPrice} as HallParameters),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...authHeader(user)
             },
         });
     if (!response.ok) {
@@ -99,7 +112,7 @@ export async function savePricing(currentPricing: CurrentPricingData, hall: Hall
     }
 }
 
-export async function saveNewMovie(movieData: MovieData): Promise<Movie> {
+export async function saveNewMovie(user: User, movieData: MovieData): Promise<Movie> {
     const response = await fetch(config.serverUrl + "/movies",
         {
             method: "POST",
@@ -110,7 +123,8 @@ export async function saveNewMovie(movieData: MovieData): Promise<Movie> {
                 releaseDate: null,
                 duration: 120} as MovieParameters),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...authHeader(user)
             },
         });
     if (response.ok) {
@@ -120,7 +134,21 @@ export async function saveNewMovie(movieData: MovieData): Promise<Movie> {
     }
 }
 
-export async function saveNewSeance(data: SeanceData): Promise<Seance> {
+export async function getMovies(user: User): Promise<Movie[]> {
+    const response = await fetch(config.serverUrl + "/movies", {
+        method: "GET",
+        headers: {
+            ...authHeader(user)
+        }
+    });
+    if (response.ok) {
+        return await response.json() as Movie[];
+    } else {
+        throw Error(response.statusText);
+    }
+}
+
+export async function saveNewSeance(user: User, data: SeanceData): Promise<Seance> {
     const response = await fetch(config.serverUrl + "/movie-shows",
         {
             method: "POST",
@@ -130,7 +158,8 @@ export async function saveNewSeance(data: SeanceData): Promise<Seance> {
                 start: formatTime(data.start)
             } as SeanceParameters),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...authHeader(user)
             },
         });
     if (response.ok) {
@@ -140,7 +169,7 @@ export async function saveNewSeance(data: SeanceData): Promise<Seance> {
     }
 }
 
-export async function patchSeance(data: SeanceData): Promise<void> {
+export async function patchSeance(user: User, data: SeanceData): Promise<void> {
     const response = await fetch(config.serverUrl + "/movie-shows/" + data.id,
         {
             method: "PATCH",
@@ -150,7 +179,8 @@ export async function patchSeance(data: SeanceData): Promise<void> {
                 start: formatTime(data.start)
             } as SeanceParameters),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...authHeader(user)
             },
         });
     if (!response.ok) {
@@ -158,12 +188,13 @@ export async function patchSeance(data: SeanceData): Promise<void> {
     }
 }
 
-export async function deleteSeance(id: number): Promise<void> {
+export async function deleteSeance(user: User, id: number): Promise<void> {
     const response = await fetch(config.serverUrl + "/movie-shows/" + id,
         {
             method: "DELETE",
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...authHeader(user)
             },
         });
     if (!response.ok) {
@@ -171,8 +202,14 @@ export async function deleteSeance(id: number): Promise<void> {
     }
 }
 
-export async function getSeances(): Promise<Seance[]> {
-    const response = await fetch(config.serverUrl + "/movie-shows", {method: "GET"});
+export async function getSeances(user: User): Promise<Seance[]> {
+    console.debug(user)
+    const response = await fetch(config.serverUrl + "/movie-shows", {
+        method: "GET",
+        headers: {
+            ...authHeader(user)
+        }
+    });
     if (response.ok) {
         return await response.json() as Seance[];
     } else {
@@ -180,8 +217,13 @@ export async function getSeances(): Promise<Seance[]> {
     }
 }
 
-export async function getOption(key: string): Promise<string> {
-    const response = await fetch(config.serverUrl + "/app-options/" + key, {method: "GET"});
+export async function getOption(user: User, key: string): Promise<string> {
+    const response = await fetch(config.serverUrl + "/app-options/" + key, {
+        method: "GET",
+        headers: {
+            ...authHeader(user)
+        }
+    });
     if (response.ok) {
         return await response.text();
     } else {
@@ -189,16 +231,37 @@ export async function getOption(key: string): Promise<string> {
     }
 }
 
-export async function saveOption(key: string, data: string): Promise<void> {
+export async function saveOption(user: User, key: string, data: string): Promise<void> {
     const response = await fetch(config.serverUrl + "/app-options/" + key,
         {
             method: "POST",
             body: data,
             headers: {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain',
+                ...authHeader(user)
             },
         });
     if (!response.ok) {
         throw Error(response.statusText);
     }
+}
+
+export async function getUsers(user: User): Promise<User[]> {
+    const response = await fetch(config.serverUrl + "/users", {
+        method: "GET",
+        headers: {
+            ...authHeader(user)
+        }
+    });
+    if (response.ok) {
+        return await response.json() as User[];
+    } else {
+        throw Error(response.statusText);
+    }
+}
+
+export function authHeader(user: User) {
+    return {
+        "Authorization": `Basic ${window.btoa(user.login + ":" + user.password)}`
+    };
 }

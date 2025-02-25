@@ -1,31 +1,30 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {User, UsersState} from "../../types";
-import {getUsers} from "../../serverApi";
-import {getCurrentUser} from "../../store/storeUtils";
+import {AuthState, User} from "../../types";
+import config from "../../../config/app.json"
 
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
 })
 
 const initialState = {
-    data: [],
+    user: config.anonymous as User,
     loading: false,
     error: null
-} as UsersState;
+} as AuthState;
 
-export const usersSlice = createSliceWithThunk({
-    name: "users",
+
+export const authSlice = createSliceWithThunk({
+    name: "auth",
     initialState,
     selectors: {
-        users: (state) => state.data,
-        usersState: (state) => state
+        currentUser: (state) => state.user
     },
     reducers: (create) => ({
-        fetchUsers: create.asyncThunk<User[]>(
-            async  (__, thunkApi) => {
+        loginAdmin: create.asyncThunk<User, User>(
+            async  (user, thunkApi) => {
                 try {
-                    const currentUser = getCurrentUser(thunkApi.getState());
-                    return await getUsers(currentUser)
+                    // await check login
+                    return user;
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
@@ -35,8 +34,8 @@ export const usersSlice = createSliceWithThunk({
                     state.loading = true;
                     state.error = null;
                 },
-                fulfilled: (state, action: PayloadAction<User[]>) => {
-                    state.data = action.payload ? action.payload : [] as User[];
+                fulfilled: (state, action: PayloadAction<User>) => {
+                    state.user = action.payload;
                 },
                 rejected: (state, action) => {
                     state.error = action.payload as string;
@@ -48,5 +47,5 @@ export const usersSlice = createSliceWithThunk({
     })
 })
 
-export const {fetchUsers} = usersSlice.actions;
-export const {users, usersState} = usersSlice.selectors;
+export const {loginAdmin} = authSlice.actions;
+export const {currentUser} = authSlice.selectors;

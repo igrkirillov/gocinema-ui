@@ -1,6 +1,7 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
 import {ClientState, DayItem, DayTimes, Seance} from "../../types";
 import {getSeances} from "../../serverApi";
+import {getCurrentUser} from "../../store/storeUtils";
 
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
@@ -42,8 +43,8 @@ export const clientSlice = createSliceWithThunk({
             async  (currentDate, thunkApi) => {
                 try {
                     // по-идее, следует использовать фильтр по дням currentDate
-                    currentDate;
-                    return await getSeances();
+                    const currentUser = getCurrentUser(thunkApi.getState());
+                    return await getSeances(currentUser);
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }

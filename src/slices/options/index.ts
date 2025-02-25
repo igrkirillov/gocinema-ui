@@ -1,8 +1,8 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {OptionsState, SaleOptionsState, User, UsersState} from "../../types";
-import config from "../../../config/app.json"
+import {OptionsState} from "../../types";
 import {getOption, saveOption} from "../../serverApi";
 import {IS_SALE_OPENED_OPTION} from "../../constants";
+import {getCurrentUser} from "../../store/storeUtils";
 
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
@@ -28,8 +28,9 @@ export const optionsSlice = createSliceWithThunk({
         fetchOptions: create.asyncThunk<Options>(
             async  (__, thunkApi) => {
                 try {
+                    const currentUser = getCurrentUser(thunkApi.getState());
                     return {
-                        isSaleOpened: (await getOption(IS_SALE_OPENED_OPTION)).toLowerCase() === "true"
+                        isSaleOpened: (await getOption(currentUser, IS_SALE_OPENED_OPTION)).toLowerCase() === "true"
                     } as Options
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
@@ -53,7 +54,8 @@ export const optionsSlice = createSliceWithThunk({
         openSale: create.asyncThunk<void>(
             async  (__, thunkApi) => {
                 try {
-                    await saveOption(IS_SALE_OPENED_OPTION, "true")
+                    const currentUser = getCurrentUser(thunkApi.getState());
+                    await saveOption(currentUser, IS_SALE_OPENED_OPTION, "true")
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
@@ -76,7 +78,8 @@ export const optionsSlice = createSliceWithThunk({
         closeSale: create.asyncThunk<void>(
             async  (__, thunkApi) => {
                 try {
-                    await saveOption(IS_SALE_OPENED_OPTION, "false")
+                    const currentUser = getCurrentUser(thunkApi.getState());
+                    await saveOption(currentUser, IS_SALE_OPENED_OPTION, "false")
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }

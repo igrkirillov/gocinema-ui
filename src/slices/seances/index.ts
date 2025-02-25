@@ -1,8 +1,8 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {CurrentPricingData, CurrentTimelineData, Seance, SeanceData, SeancesState} from "../../types";
-import config from "../../../config/app.json"
+import {CurrentTimelineData, Seance, SeancesState} from "../../types";
 import {deleteSeance, getSeances, patchSeance, saveNewSeance} from "../../serverApi";
 import {CurrentTimeline} from "../../data/CurrentTimeline";
+import {getCurrentUser} from "../../store/storeUtils";
 
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
@@ -25,7 +25,8 @@ export const seancesSlice = createSliceWithThunk({
         fetchSeances: create.asyncThunk<Seance[]>(
             async  (__, thunkApi) => {
                 try {
-                    return await getSeances();
+                    const currentUser = getCurrentUser(thunkApi.getState());
+                    return await getSeances(currentUser);
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
@@ -48,16 +49,17 @@ export const seancesSlice = createSliceWithThunk({
         saveCurrentTimeline: create.asyncThunk<Seance[], CurrentTimelineData>(
             async  (currentTimeline, thunkApi) => {
                 try {
+                    const currentUser = getCurrentUser(thunkApi.getState());
                     for (let add of currentTimeline.added) {
-                        await saveNewSeance(add);
+                        await saveNewSeance(currentUser, add);
                     }
                     for (let ch of currentTimeline.changed) {
-                        await patchSeance(ch);
+                        await patchSeance(currentUser, ch);
                     }
                     for (let del of currentTimeline.deleted) {
-                        await deleteSeance(del.id as number);
+                        await deleteSeance(currentUser, del.id as number);
                     }
-                    return await getSeances();
+                    return await getSeances(currentUser);
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }

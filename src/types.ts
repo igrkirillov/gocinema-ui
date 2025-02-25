@@ -22,9 +22,10 @@ type LoadingState = {
 export type MoviesState = ArrayDataState<Movie>
 
 export type User = {
-    id: number
+    id: number | null
     login: string,
-    role: string
+    password: string | null
+    role: string | null
 }
 
 export type UsersState = ArrayDataState<User>
@@ -158,4 +159,8 @@ export type DayItem = {
 
 export type DayTimes = {
     [key: number]: Seance[] //key hallId
+}
+
+export type AuthState = LoadingState & {
+    user: User | null
 }
