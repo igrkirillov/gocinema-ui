@@ -1,6 +1,6 @@
 import styles from "../css/styles.module.scss"
 import {useEffect, useState, MouseEvent} from "react";
-import {useAppDispatch, useAppSelector} from "../../../hooks/hooks";
+import {useAppDispatch, useAppSelector} from "../../../hooks/storeHooks";
 import {clientState, setCurrentDate} from "../../../slices/client";
 import {getSixDays} from "../../../data/dataUtils";
 import {DAY_NAMES} from "../../../constants";

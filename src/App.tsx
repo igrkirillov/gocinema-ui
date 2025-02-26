@@ -7,7 +7,7 @@ import {Booking} from "./components/client/booking";
 import {AuthContext} from "./context/AuthContext";
 import Login from "./pages/login/login";
 import {User} from "./types";
-import {useAppDispatch, useAppSelector} from "./hooks/hooks";
+import {useAppDispatch, useAppSelector} from "./hooks/storeHooks";
 import {clearUser, currentUser, loginUser} from "./slices/auth";
 
 function App() {

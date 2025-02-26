@@ -1,6 +1,6 @@
 import styles from "../css/styles.module.scss"
 import "../css/normalize.css"
-import {useAppDispatch, useAppSelector} from "../../../hooks/hooks";
+import {useAppDispatch, useAppSelector} from "../../../hooks/storeHooks";
 import {closeSale, fetchOptions, openSale, optionsState} from "../../../slices/options";
 import {Error} from "../../error/Error";
 import {Spinner} from "../../spinner/Spinner";

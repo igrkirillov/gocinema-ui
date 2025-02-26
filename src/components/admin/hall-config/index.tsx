@@ -1,12 +1,16 @@
-import {useAppDispatch, useAppSelector, useCurrentHall} from "../../../hooks/hooks";
+import {useAppDispatch, useAppSelector} from "../../../hooks/storeHooks";
 import {ChangeEvent, MouseEvent, useEffect} from "react";
 import {Error} from "../../error/Error";
 import {cancelCurrentHall, hallsState, saveCurrentHall, updateCurrentHall} from "../../../slices/halls";
 import styles from "../css/styles.module.scss"
 import "../css/normalize.css"
 import {CurrentHall} from "../../../data/CurrentHall";
+import {useCurrentHall} from "../../../hooks/useCurrentHall";
+import {validateEditAndNotice} from "../../../noticeUtils";
+import {useEditAvailable} from "../../../hooks/useEditAvailable";
 
 export function HallConfig() {
+    const isEditAvalable = useEditAvailable();
     const {data: halls, error, currentHalls} = useAppSelector(hallsState);
     const dispatch = useAppDispatch();
     const [currentHall, setCurrentHall] = useCurrentHall(
@@ -27,6 +31,9 @@ export function HallConfig() {
                 : new CurrentHall().fillFromHall(halls.find((hall) => hall.id === hallId) ?? null));
     }
     const onHallRowsChange = (event: ChangeEvent<HTMLInputElement>) => {
+        if (!validateEditAndNotice(isEditAvalable)) {
+            return;
+        }
         if (currentHall) {
             currentHall.rows = Number(event.currentTarget.value);
             const newCurrentHall = currentHall.copy().refill();
@@ -35,6 +42,9 @@ export function HallConfig() {
         }
     }
     const onHallColsChange = (event: ChangeEvent<HTMLInputElement>) => {
+        if (!validateEditAndNotice(isEditAvalable)) {
+            return;
+        }
         if (currentHall) {
             currentHall.cols = Number(event.currentTarget.value);
             const newCurrentHall = currentHall.copy().refill();
@@ -56,6 +66,9 @@ export function HallConfig() {
         }
     }
     const onPlaceClick = (event: MouseEvent<HTMLSpanElement>) => {
+        if (!validateEditAndNotice(isEditAvalable)) {
+            return;
+        }
         event.preventDefault();
         const row = Number(event.currentTarget.dataset["row"]);
         const col = Number(event.currentTarget.dataset["col"]);

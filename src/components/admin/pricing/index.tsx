@@ -1,10 +1,11 @@
-import {useAppDispatch, useAppSelector, useCurrentPricing} from "../../../hooks/hooks";
+import {useAppDispatch, useAppSelector} from "../../../hooks/storeHooks";
 import {ChangeEvent, MouseEvent, useEffect} from "react";
 import {Error} from "../../error/Error";
 import {cancelCurrentPricing, hallsState, saveCurrentPricing, updateCurrentPricing} from "../../../slices/halls";
 import styles from "../css/styles.module.scss"
 // import "../css/normalize.css"
 import {CurrentPricing} from "../../../data/CurrentPricing";
+import {useCurrentPricing} from "../../../hooks/useCurrentPricing";
 
 export function Pricing() {
     const {data: halls, error, currentPricings} = useAppSelector(hallsState);

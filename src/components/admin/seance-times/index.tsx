@@ -3,7 +3,7 @@ import "../css/normalize.css"
 import {MouseEvent, useEffect, useState} from "react";
 import {MoviePopup} from "../movie-popup";
 import {Movie, MovieData, SeanceData} from "../../../types";
-import {useAppDispatch, useAppSelector} from "../../../hooks/hooks";
+import {useAppDispatch, useAppSelector} from "../../../hooks/storeHooks";
 import {fetchMovies, moviesState, saveMovie} from "../../../slices/movies";
 import moviePoster from "../../../assets/poster.png"
 import {formatTime, toMovieData, toSeanceData} from "../../../data/dataUtils";
@@ -13,8 +13,11 @@ import {hallsState} from "../../../slices/halls";
 import {Time} from "../../../data/Time";
 import {SeancePopup} from "../seance-popup";
 import {CurrentTimeline} from "../../../data/CurrentTimeline";
+import {useEditAvailable} from "../../../hooks/useEditAvailable";
+import {validateEditAndNotice} from "../../../noticeUtils";
 
 export function SeanceTimes() {
+    const isEditAvailable = useEditAvailable();
     const [isActiveMoviePopup, setActiveMoviePopup] = useState(false);
     const [isActiveSeancePopup, setActiveSeancePopup] = useState(false);
     const [currentMovie, setCurrentMovie] = useState({} as MovieData);
@@ -31,6 +34,9 @@ export function SeanceTimes() {
         dispatch(setCurrentTimeline(new CurrentTimeline().fromSeances(seances).serialize()));
     }, [seances])
     const onAddMovieButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
+        if (!validateEditAndNotice(isEditAvailable)) {
+            return;
+        }
         event.preventDefault();
         setCurrentMovie(toMovieData(null));
         setActiveMoviePopup(true);
@@ -54,14 +60,23 @@ export function SeanceTimes() {
         setActiveSeancePopup(false);
     }
     const onMovieClick = (movie: Movie): void => {
+        if (!validateEditAndNotice(isEditAvailable)) {
+            return;
+        }
         setCurrentMovie(toMovieData(movie));
         setActiveMoviePopup(true);
     }
     const onSeanceClick = (seance: SeanceData): void => {
+        if (!validateEditAndNotice(isEditAvailable)) {
+            return;
+        }
         setCurrentSeance(seance);
         setActiveSeancePopup(true);
     }
     const onNewSeanceClick = (): void => {
+        if (!validateEditAndNotice(isEditAvailable)) {
+            return;
+        }
         setCurrentSeance(toSeanceData(null));
         setActiveSeancePopup(true);
     }

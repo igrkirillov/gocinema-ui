@@ -6,7 +6,7 @@ import styles from "../../components/admin/css/styles.module.scss";
 import {FormEvent, useEffect} from "react";
 import {User} from "../../types";
 import {ROLE_ADMIN} from "../../constants";
-import {useAppSelector} from "../../hooks/hooks";
+import {useAppSelector} from "../../hooks/storeHooks";
 import {authState} from "../../slices/auth";
 
 const Login = () => {

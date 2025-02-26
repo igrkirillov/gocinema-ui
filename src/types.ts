@@ -1,4 +1,3 @@
-import {CurrentTimeline} from "./data/CurrentTimeline";
 import {Movie} from "./components/client/movie";
 
 export type Movie = {

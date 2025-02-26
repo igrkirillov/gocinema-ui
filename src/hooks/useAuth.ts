@@ -1,7 +1,6 @@
 import {useContext} from "react";
 import {AuthContext} from "../context/AuthContext";
 import {User} from "../types";
-import {useAppDispatch} from "./hooks";
 
 export const useAuth = () => {
     const { user, setUser } = useContext(AuthContext);

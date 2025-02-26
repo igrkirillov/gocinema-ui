@@ -1,7 +1,7 @@
 import {Main} from "./../main";
 import {Movie} from "./../movie";
 import {useEffect} from "react";
-import {useAppDispatch, useAppSelector} from "../../../hooks/hooks";
+import {useAppDispatch, useAppSelector} from "../../../hooks/storeHooks";
 import {clientState, dayItems, fetchDaySeances} from "../../../slices/client";
 import {Days} from "./../days";
 
