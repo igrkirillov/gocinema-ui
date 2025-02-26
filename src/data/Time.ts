@@ -76,6 +76,7 @@ export class Time {
     addMinutes(minutes: number) {
         const tempHours = this.hours + +Number(minutes / 60).toFixed(0);
         const tempMinutes = this.minutes + minutes % 60;
+        // часы и минуты не могут быть больше 23:59 (конец дня)
         this.hours = Math.min(23, tempHours);
         this.minutes = Math.min(59, tempMinutes);
         return this;
