@@ -34,6 +34,12 @@ export class CurrentHall {
         return this;
     }
 
+    filleFromParameters(rows: number, cols: number) {
+        this.rows = rows;
+        this.cols = cols;
+        return this;
+    }
+
     copy(): CurrentHall {
         const copy = new CurrentHall();
         copy.id = this.id;

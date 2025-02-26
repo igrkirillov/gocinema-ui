@@ -151,7 +151,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     right: $colwidth;
     width: 24px;
     height: 16px;
-    background-image: url('../../assets/switch.png');
+    background-image: url('../../../assets/switch.png');
     background-size: 24px 16px;
   }
   
@@ -354,7 +354,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     left: 4px;
     width: 12px;
     height: 12px;
-    background-image: url('../../assets/trash-sprite.png');
+    background-image: url('../../../assets/trash-sprite.png');
     background-position: 0 0;
     background-size: 24px 12px;
     background-repeat: no-repeat;
@@ -441,7 +441,7 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
 .conf-step__chair_vip {
   border-color: #0a828a;
   background-color: #b0d6d8;
-  background-image: url('../../assets/green-pattern.png');
+  background-image: url('../../../assets/green-pattern.png');
   background-repeat: repeat;
 }
 

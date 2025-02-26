@@ -36,7 +36,12 @@ export function toSeanceData(seance: Seance | null): SeanceData {
         hall: seance.hall,
         movie: seance.movie,
         start: new Time().fillFromString(seance.start).serialize()
-    } : {}) as SeanceData;
+    } : {
+        id: null,
+        hall: null,
+        movie: null,
+        start: null
+    }) as SeanceData;
 }
 
 export function formatTime(data: TimeData): string {

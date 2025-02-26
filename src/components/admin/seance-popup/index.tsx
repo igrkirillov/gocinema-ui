@@ -20,9 +20,10 @@ export function SeancePopup(props: {
     const onSubmitForm = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
+        console.log(data)
         data.hall = halls.find(h => h.id == Number(formData.get("hall"))) as Hall;
         data.movie = movies.find(m => m.id == Number(formData.get("movie"))) as Movie;
-        data.start = new Time().fillFromString(formData.get("start") as string);
+        data.start = new Time().fillFromString(formData.get("start") as string).serialize();
         saveCallback(data);
         event.currentTarget.reset();
     }

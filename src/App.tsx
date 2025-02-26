@@ -1,21 +1,25 @@
 // import './App.css'
-import {Provider} from "react-redux";
 import {Navigate, Route, Routes} from "react-router";
-import {store} from "./store";
 import {Admin} from "./pages/admin";
 import {Client} from "./pages/client";
 import {MovieSelection} from "./components/client/movieSelection";
 import {Booking} from "./components/client/booking";
 import {AuthContext} from "./context/AuthContext";
 import Login from "./pages/login/login";
-import {useEffect, useState} from "react";
 import {User} from "./types";
-import {useAppSelector} from "./hooks/hooks";
-import {currentUser} from "./slices/auth";
-import config from "./../config/app.json"
+import {useAppDispatch, useAppSelector} from "./hooks/hooks";
+import {clearUser, currentUser, loginUser} from "./slices/auth";
 
 function App() {
-    const [user, setUser] = useState<User>(useAppSelector(currentUser) as User);
+    const dispatch = useAppDispatch();
+    const user = useAppSelector(currentUser) as User;
+    const setUser = (user: User | null) => {
+        if (user) {
+            dispatch(loginUser(user));
+        } else {
+            dispatch(clearUser())
+        }
+    }
     return (
         <AuthContext.Provider value={{ user, setUser }}>
             <Routes>

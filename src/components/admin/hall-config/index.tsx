@@ -62,12 +62,16 @@ export function HallConfig() {
         let newCurrentHall;
         if (currentHall && isStandard(row, col, currentHall)) {
             // из станд в вип
+            console.log("из станд в вип")
             newCurrentHall = currentHall.copy().setVipPlace(row, col);
+            console.debug(newCurrentHall)
         } else if (currentHall && isVip(row, col, currentHall)) {
             // из вип в заблок
+            console.log("из вип в заблок")
             newCurrentHall = currentHall.copy().setBlockedPlace(row, col);
         } else if (currentHall && isBlocked(row, col, currentHall)) {
             // из заблок в станд
+            console.log("из заблок в станд")
             newCurrentHall = currentHall.copy().setStandardPlace(row, col);
         }
         if (newCurrentHall) {

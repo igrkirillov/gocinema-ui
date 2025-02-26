@@ -10,8 +10,11 @@ import {
     PlaceParameters, Seance, SeanceData, SeanceParameters, User
 } from "./types";
 import {formatTime} from "./data/dataUtils";
+import {DEFAULT_COLS, DEFAULT_ROWS} from "./constants";
+import {CurrentHall} from "./data/CurrentHall";
 
 export async function getHalls(user: User): Promise<Hall[]> {
+    console.debug(user)
     const response = await fetch(config.serverUrl + "/halls", {
         method: "GET",
         headers: {
@@ -21,7 +24,8 @@ export async function getHalls(user: User): Promise<Hall[]> {
     if (response.ok) {
         return await response.json() as Hall[];
     } else {
-        throw Error(response.statusText);
+        console.log(response)
+        throw Error(getErrorMessage(response));
     }
 }
 
@@ -33,7 +37,8 @@ export async function deleteHallById(user: User, hallId: number) {
         }
     });
     if (!response.ok) {
-        throw Error(response.statusText);
+        console.log(response)
+        throw Error(getErrorMessage(response));
     }
 }
 
@@ -43,7 +48,16 @@ export async function createNextHall(user: User, allHalls: Hall[]): Promise<Hall
     const response = await fetch(config.serverUrl + "/halls",
         {
                 method: "POST",
-                body: JSON.stringify({name: `Зал ${maxNumber + 1}`, cols: 0, rows: 0} as HallParameters),
+                body: JSON.stringify({
+                    name: `Зал ${maxNumber + 1}`,
+                    cols: DEFAULT_COLS,
+                    rows: DEFAULT_ROWS,
+                    places: new CurrentHall().filleFromParameters(DEFAULT_ROWS, DEFAULT_COLS).refill().places.map(p => {
+                        return {
+                            row: p.row,
+                            col: p.col
+                        } as PlaceParameters;
+                    })} as HallParameters),
                 headers: {
                     'Content-Type': 'application/json',
                     ...authHeader(user)
@@ -52,9 +66,12 @@ export async function createNextHall(user: User, allHalls: Hall[]): Promise<Hall
     if (response.ok) {
         return await response.json() as Hall;
     } else {
-        throw Error(response.statusText);
+        console.log(response)
+        throw Error(getErrorMessage(response));
     }
 }
+
+
 
 export async function patchHall(user: User, currentHall: CurrentHallData, hall: Hall): Promise<void> {
     const response = await fetch(config.serverUrl + "/halls/" + currentHall.id,
@@ -80,7 +97,8 @@ export async function patchHall(user: User, currentHall: CurrentHallData, hall: 
             },
         });
     if (!response.ok) {
-        throw Error(response.statusText);
+        console.log(response)
+        throw Error(getErrorMessage(response));
     }
 }
 
@@ -108,7 +126,8 @@ export async function savePricing(user: User, currentPricing: CurrentPricingData
             },
         });
     if (!response.ok) {
-        throw Error(response.statusText);
+        console.log(response)
+        throw Error(getErrorMessage(response));
     }
 }
 
@@ -130,7 +149,8 @@ export async function saveNewMovie(user: User, movieData: MovieData): Promise<Mo
     if (response.ok) {
         return await response.json() as Movie;
     } else {
-        throw Error(response.statusText);
+        console.log(response)
+        throw Error(getErrorMessage(response));
     }
 }
 
@@ -144,7 +164,8 @@ export async function getMovies(user: User): Promise<Movie[]> {
     if (response.ok) {
         return await response.json() as Movie[];
     } else {
-        throw Error(response.statusText);
+        console.log(response)
+        throw Error(getErrorMessage(response));
     }
 }
 
@@ -165,7 +186,8 @@ export async function saveNewSeance(user: User, data: SeanceData): Promise<Seanc
     if (response.ok) {
         return await response.json() as Seance;
     } else {
-        throw Error(response.statusText);
+        console.log(response)
+        throw Error(getErrorMessage(response));
     }
 }
 
@@ -184,7 +206,8 @@ export async function patchSeance(user: User, data: SeanceData): Promise<void> {
             },
         });
     if (!response.ok) {
-        throw Error(response.statusText);
+        console.log(response)
+        throw Error(getErrorMessage(response));
     }
 }
 
@@ -198,7 +221,8 @@ export async function deleteSeance(user: User, id: number): Promise<void> {
             },
         });
     if (!response.ok) {
-        throw Error(response.statusText);
+        console.log(response)
+        throw Error(getErrorMessage(response));
     }
 }
 
@@ -213,7 +237,8 @@ export async function getSeances(user: User): Promise<Seance[]> {
     if (response.ok) {
         return await response.json() as Seance[];
     } else {
-        throw Error(response.statusText);
+        console.log(response)
+        throw Error(getErrorMessage(response));
     }
 }
 
@@ -227,7 +252,8 @@ export async function getOption(user: User, key: string): Promise<string> {
     if (response.ok) {
         return await response.text();
     } else {
-        throw Error(response.statusText);
+        console.log(response)
+        throw Error(getErrorMessage(response));
     }
 }
 
@@ -242,7 +268,8 @@ export async function saveOption(user: User, key: string, data: string): Promise
             },
         });
     if (!response.ok) {
-        throw Error(response.statusText);
+        console.log(response)
+        throw Error(getErrorMessage(response));
     }
 }
 
@@ -256,11 +283,40 @@ export async function getUsers(user: User): Promise<User[]> {
     if (response.ok) {
         return await response.json() as User[];
     } else {
-        throw Error(response.statusText);
+        console.log(response)
+        throw Error(getErrorMessage(response));
     }
 }
 
-export function authHeader(user: User) {
+export async function getUserByLogin(user: User): Promise<User> {
+    const response = await fetch(config.serverUrl + "/users/" + user.login, {
+        method: "GET",
+        headers: {
+            ...authHeader(user)
+        }
+    });
+    if (response.ok) {
+        return await response.json() as User;
+    } else {
+        console.log(response)
+        throw Error(getErrorMessage(response));
+    }
+}
+
+function getErrorMessage(r: Response) {
+    if (r.status == 401) {
+        return "Неправильный логин или пароль!"
+    } else if (r.status == 403) {
+        return "Нет прав!"
+    } else if (!r.statusText){
+        return r.statusText;
+    } else {
+        return "Неизвестная ошибка";
+    }
+
+}
+
+function authHeader(user: User) {
     return {
         "Authorization": `Basic ${window.btoa(user.login + ":" + user.password)}`
     };

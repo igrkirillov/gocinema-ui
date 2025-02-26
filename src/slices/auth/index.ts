@@ -1,6 +1,8 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {AuthState, User} from "../../types";
+import {AuthState, CurrentPricingData, User} from "../../types";
 import config from "../../../config/app.json"
+import {ROLE_ADMIN} from "../../constants";
+import {getUserByLogin} from "../../serverApi";
 
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
@@ -17,14 +19,18 @@ export const authSlice = createSliceWithThunk({
     name: "auth",
     initialState,
     selectors: {
-        currentUser: (state) => state.user
+        currentUser: (state) => state.user,
+        authState: (state) => state
     },
     reducers: (create) => ({
-        loginAdmin: create.asyncThunk<User, User>(
+        loginUser: create.asyncThunk<User, User>(
             async  (user, thunkApi) => {
                 try {
-                    // await check login
-                    return user;
+                    const foundUser = await getUserByLogin(user);
+                    return {
+                        ...foundUser,
+                        password: user.password
+                    } as User;
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
@@ -43,9 +49,12 @@ export const authSlice = createSliceWithThunk({
                 settled: (state) => {
                     state.loading = false;
                 }
-            })
+            }),
+        clearUser: create.reducer((state) => {
+            state.user = null;
+        }),
     })
 })
 
-export const {loginAdmin} = authSlice.actions;
-export const {currentUser} = authSlice.selectors;
+export const {loginUser, clearUser} = authSlice.actions;
+export const {currentUser, authState} = authSlice.selectors;

@@ -5,3 +5,5 @@ export const IS_SALE_OPENED_OPTION = "IS_SALE_OPENED";
 export const DAY_NAMES = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
 export const ROLE_CLIENT = "CLIENT";
 export const ROLE_ADMIN = "ADMIN";
+export const DEFAULT_ROWS = 10;
+export const DEFAULT_COLS = 10;

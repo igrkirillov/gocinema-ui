@@ -15,13 +15,15 @@ import {ROLE_ADMIN} from "../../constants";
 export function Admin() {
     const {user} = useAuth();
     const navigate = useNavigate();
+    function isAccessPermit() {
+        return user && user.role === ROLE_ADMIN;
+    }
     useEffect(() => {
-        console.log(user)
-        if (!user || user.role !== ROLE_ADMIN) {
+        if (!isAccessPermit()) {
             navigate("/login?backUrl=admin");
         }
     }, [user])
-    return (
+    return isAccessPermit() ? (
         <>
             <Header></Header>
             <Main>
@@ -42,5 +44,5 @@ export function Admin() {
                 </Step>
             </Main>
         </>
-    )
+    ) : (<></>)
 }
