@@ -1,6 +1,6 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Movie, MovieData, MoviesState} from "../../types";
-import {getMovies, saveNewMovie} from "../../serverApi";
+import {getMovies, patchMovie, saveNewMovie} from "../../serverApi";
 import {getCurrentUser} from "../../store/storeUtils";
 
 const createSliceWithThunk = buildCreateSlice({
@@ -48,7 +48,12 @@ export const moviesSlice = createSliceWithThunk({
             async  (movieData, thunkApi) => {
                 try {
                     const currentUser = getCurrentUser(thunkApi.getState());
-                    return await saveNewMovie(currentUser, movieData);
+                    if (!movieData.id) {
+                        return await saveNewMovie(currentUser, movieData);
+                    } else {
+                        await patchMovie(currentUser, movieData);
+                        return (await getMovies(currentUser)).find(m => m.id === movieData.id) as Movie;
+                    }
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
@@ -59,7 +64,12 @@ export const moviesSlice = createSliceWithThunk({
                     state.error = null;
                 },
                 fulfilled: (state, action: PayloadAction<Movie>) => {
-                    state.data.push(action.payload);
+                    const index = state.data.findIndex(el => el.id === action.payload.id);
+                    if (index >= 0) {
+                        state.data[index] = action.payload;
+                    } else {
+                        state.data.push(action.payload);
+                    }
                 },
                 rejected: (state, action) => {
                     state.error = action.payload as string;

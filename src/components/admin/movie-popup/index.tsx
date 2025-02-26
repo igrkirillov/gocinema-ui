@@ -15,6 +15,7 @@ export function MoviePopup(props: {
         data.name = formData.get("name") as string;
         data.description = formData.get("description") as string;
         data.country = formData.get("country") as string;
+        data.duration = Number(formData.get("duration"));
         saveCallback(data);
         event.currentTarget.reset();
     }

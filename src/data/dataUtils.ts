@@ -23,11 +23,19 @@ export function getHallByIdOrThrow(id: number | null, halls: Hall[]): Hall {
 export function toMovieData(movie: Movie | null): MovieData {
     return (movie ? {
         id: movie.id,
+        newId: null,
         name: movie.name,
         description: movie.description,
         country: movie.country,
         duration: movie.duration
-    } : {}) as MovieData;
+    } : {
+        id: null,
+        newId: new Date().getTime(),
+        name: null,
+        description: null,
+        country: null,
+        duration: null
+    }) as MovieData;
 }
 
 export function toSeanceData(seance: Seance | null): SeanceData {

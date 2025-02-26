@@ -140,7 +140,7 @@ export async function saveNewMovie(user: User, movieData: MovieData): Promise<Mo
                 description: movieData.description,
                 country: movieData.country,
                 releaseDate: null,
-                duration: 120} as MovieParameters),
+                duration: movieData.duration} as MovieParameters),
             headers: {
                 'Content-Type': 'application/json',
                 ...authHeader(user)
@@ -149,6 +149,27 @@ export async function saveNewMovie(user: User, movieData: MovieData): Promise<Mo
     if (response.ok) {
         return await response.json() as Movie;
     } else {
+        console.log(response)
+        throw Error(getErrorMessage(response));
+    }
+}
+
+export async function patchMovie(user: User, movieData: MovieData): Promise<void> {
+    const response = await fetch(config.serverUrl + "/movies/" + movieData.id,
+        {
+            method: "PATCH",
+            body: JSON.stringify({
+                name: movieData.name,
+                description: movieData.description,
+                country: movieData.country,
+                releaseDate: null,
+                duration: movieData.duration} as MovieParameters),
+            headers: {
+                'Content-Type': 'application/json',
+                ...authHeader(user)
+            },
+        });
+    if (!response.ok) {
         console.log(response)
         throw Error(getErrorMessage(response));
     }

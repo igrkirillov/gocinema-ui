@@ -30,9 +30,9 @@ export function SeanceTimes() {
     useEffect(() => {
         dispatch(setCurrentTimeline(new CurrentTimeline().fromSeances(seances).serialize()));
     }, [seances])
-    const onAddButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
+    const onAddMovieButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        setCurrentMovie({} as MovieData);
+        setCurrentMovie(toMovieData(null));
         setActiveMoviePopup(true);
     }
     const saveMovieCallback = (data: MovieData): void => {
@@ -90,7 +90,7 @@ export function SeanceTimes() {
         <>
             <p className={styles["conf-step__paragraph"]}>
                 <button className={styles["conf-step__button"] + " " + styles["conf-step__button-accent"]}
-                    onClick={onAddButtonClick}>Добавить фильм</button>
+                    onClick={onAddMovieButtonClick}>Добавить фильм</button>
             </p>
             <div className={styles["conf-step__movies"]}>
                 {movies.map(m => (
