@@ -10,7 +10,7 @@ export function Pricing() {
     const {data: halls, error, currentPricings} = useAppSelector(hallsState);
     const dispatch = useAppDispatch();
     const [currentPricing, setCurrentPricing] = useCurrentPricing(
-        halls.length > 0 ? new CurrentPricing().fillFromHall(halls[0]) : null);
+        halls.length > 0 ? new CurrentPricing().fillFromHall(halls[0]) : new CurrentPricing());
     // перерисовывать компонент при изменении модели
     useEffect(() => {
         // если currentPricing ещё не задан, тогда будет текущим halls[0], иначе существующий currentPricing просто рефрешим

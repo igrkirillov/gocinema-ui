@@ -104,7 +104,7 @@ export function SeanceTimes() {
             </div>
             {halls.map(h => {
                 return (
-                    <div className={styles["conf-step__seances"]}>
+                    <div key={h.id} className={styles["conf-step__seances"]}>
                         <div className={styles["conf-step__seances-hall"]}>
                             <h3 className={styles["conf-step__seances-title"]}>{h.name}</h3>
                             <div className={styles["conf-step__seances-timeline"]}

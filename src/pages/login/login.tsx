@@ -47,12 +47,12 @@ const Login = () => {
                             <label className={styles["login__label"]} htmlFor="login">
                                 login
                                 <input className={styles["login__input"]} type="text" placeholder="login"
-                                       name="login" required></input>
+                                       name="login" required autoComplete="true"></input>
                             </label>
-                            <label className={styles["login__label"]} htmlFor="pwd">
+                            <label className={styles["login__label"]} htmlFor="password">
                                 Пароль
                                 <input className={styles["login__input"]} type="password" placeholder="" name="password"
-                                       required></input>
+                                       required autoComplete="true"></input>
                             </label>
                             <div className={styles["text-center"]}>
                                 <input value="Авторизоваться" type="submit" className={styles["login__button"]}></input>

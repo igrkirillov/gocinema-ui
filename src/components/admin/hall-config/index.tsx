@@ -10,7 +10,7 @@ export function HallConfig() {
     const {data: halls, error, currentHalls} = useAppSelector(hallsState);
     const dispatch = useAppDispatch();
     const [currentHall, setCurrentHall] = useCurrentHall(
-        halls.length > 0 ? new CurrentHall().fillFromHall(halls[0]) : null);
+        halls.length > 0 ? new CurrentHall().fillFromHall(halls[0]) : new CurrentHall());
     // перерисовывать компонент при изменении модели
     useEffect(() => {
         // если currentHall ещё не задан, тогда будет текущим halls[0], иначе существующий currentHall просто рефрешим
