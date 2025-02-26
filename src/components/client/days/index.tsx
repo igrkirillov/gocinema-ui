@@ -23,7 +23,7 @@ export function Days() {
     return (
         <nav className={styles["page-nav"]}>
             {days.map(day => (
-                <a className={styles["page-nav__day"] + " " +
+                <a key={day} className={styles["page-nav__day"] + " " +
                     (new Date(day).getDate() === new Date().getDate() ? styles["page-nav__day_today"] : "") + " " +
                     (new Date(day).getDate() === new Date(currentDate).getDate() ? styles["page-nav__day_chosen"] : "")}
                    href="#"

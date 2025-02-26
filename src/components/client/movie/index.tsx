@@ -23,11 +23,11 @@ export function Movie(props: MovieProps) {
             </div>
 
             {halls.map(h => (
-                <div className={styles["movie-seances__hall"]}>
+                <div key={h.id} className={styles["movie-seances__hall"]}>
                     <h3 className={styles["movie-seances__hall-title"]}>{h.name}</h3>
                     <ul className={styles["movie-seances__list"]}>
                         {timesMap[h.id].map(s => (
-                            <li className={styles["movie-seances__time-block"]}>
+                            <li key={s.id} className={styles["movie-seances__time-block"]}>
                                 <a className={styles["movie-seances__time"]}
                                    href={"./seances/" + s.id}>{s.start}</a>
                             </li>
