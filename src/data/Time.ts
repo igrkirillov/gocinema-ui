@@ -74,8 +74,10 @@ export class Time {
     }
 
     addMinutes(minutes: number) {
-        this.hours += +Number(minutes / 60).toFixed(0);
-        this.minutes += minutes % 60;
+        const tempHours = this.hours + +Number(minutes / 60).toFixed(0);
+        const tempMinutes = this.minutes + minutes % 60;
+        this.hours = Math.min(23, tempHours);
+        this.minutes = Math.min(59, tempMinutes);
         return this;
     }
 }
