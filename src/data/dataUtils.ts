@@ -33,11 +33,13 @@ export function toMovieData(movie: Movie | null): MovieData {
 export function toSeanceData(seance: Seance | null): SeanceData {
     return (seance ? {
         id: seance.id,
+        newId: null,
         hall: seance.hall,
         movie: seance.movie,
         start: new Time().fillFromString(seance.start).serialize()
     } : {
         id: null,
+        newId: new Date().getTime(),
         hall: null,
         movie: null,
         start: null

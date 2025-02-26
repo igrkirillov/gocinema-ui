@@ -29,15 +29,24 @@ export class CurrentTimeline {
         }
         this.changed = [];
         if (data.changed) {
-            this.changed.push(...data.changed);
+            for (const ch of data.changed) {
+                // пересоздаём объекты, чтобы сделать их мутабельными для UI
+                this.changed.push({...ch} as SeanceData);
+            }
         }
         this.deleted = [];
         if (data.deleted) {
-            this.deleted.push(...data.deleted)
+            for (const d of data.deleted) {
+                // пересоздаём объекты, чтобы сделать их мутабельными для UI
+                this.deleted.push({...d} as SeanceData);
+            }
         }
         this.added = [];
         if (data.added) {
-            this.added.push(...data.added);
+            for (const ad of data.added) {
+                // пересоздаём объекты, чтобы сделать их мутабельными для UI
+                this.added.push({...ad} as SeanceData);
+            }
         }
         return this;
     }
@@ -72,12 +81,20 @@ export class CurrentTimeline {
 
     addChange(data: SeanceData): CurrentTimeline {
         if (!data.id) {
-            if (!this.added.includes(data)) {
+            // если новый элемент
+            const index = this.added.findIndex(ad => ad.newId === data.newId);
+            if (index < 0) {
                 this.added.push(data);
+            } else {
+                this.added[index] = data;
             }
         } else {
-            if (!this.changed.includes(data)) {
+            // если существующий элемент
+            const index = this.changed.findIndex(ch => ch.id === data.id);
+            if (index < 0) {
                 this.changed.push(data);
+            } else {
+                this.changed[index] = data;
             }
         }
         return this;

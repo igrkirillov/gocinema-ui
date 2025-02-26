@@ -91,7 +91,12 @@ export type CurrentPricingData = {
 }
 
 export type MovieData = {
-    id: number | null
+    id: number | null,
+    /**
+     * Служит для идентификации добавленного элемента.
+     * Заполняется при создании на UI.
+     */
+    newId: number | null,
     name: string,
     description: string,
     country: string,
@@ -119,6 +124,11 @@ export type Seance = {
 
 export type SeanceData = {
     id: number | null,
+    /**
+     * Служит для идентификации добавленного элемента.
+     * Заполняется при создании на UI.
+     */
+    newId: number | null,
     hall: Hall,
     movie: Movie,
     start: TimeData,
