@@ -50,7 +50,7 @@ export const seancesSlice = createSliceWithThunk({
             async  (currentTimeline, thunkApi) => {
                 try {
                     // проверка консистентности сетки сеансов перед сохранением
-                    new CurrentTimeline().fromData(currentTimeline).checkConsistency();
+                    new CurrentTimeline().fillFromData(currentTimeline).checkConsistency();
                     const currentUser = getCurrentUser(thunkApi.getState());
                     for (let add of currentTimeline.added) {
                         await saveNewSeance(currentUser, add);

@@ -62,7 +62,7 @@ export function isAllDataSaved(currentHalls: CurrentHallData[] | null, currentPr
                                currentTimeline: CurrentTimelineData | null) {
     return (!currentHalls || currentHalls.length == 0)
         && (!currentPricings || currentPricings.length == 0)
-        && (!currentTimeline || !new CurrentTimeline().fromData(currentTimeline).hasChanges());
+        && (!currentTimeline || !new CurrentTimeline().fillFromData(currentTimeline).hasChanges());
 }
 
 export function getSixDays(date: number): number[] {

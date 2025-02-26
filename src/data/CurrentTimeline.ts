@@ -15,7 +15,7 @@ export class CurrentTimeline {
         this.added = [];
     }
 
-    fromSeances(seances: Seance[]): CurrentTimeline {
+    fillFromSeances(seances: Seance[]): CurrentTimeline {
         this.seances = seances;
         this.changed = [];
         this.deleted = [];
@@ -23,7 +23,7 @@ export class CurrentTimeline {
         return this;
     }
 
-    fromData(data: CurrentTimelineData): CurrentTimeline {
+    fillFromData(data: CurrentTimelineData): CurrentTimeline {
         this.seances = [];
         if (data.seances) {
             this.seances.push(...data.seances);

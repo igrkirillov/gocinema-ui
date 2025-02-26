@@ -31,7 +31,7 @@ export function SeanceTimes() {
     const {data: seances, currentTimeline, error: seancesError} = useAppSelector(seancesState);
     const {data: halls, error: hallsError} = useAppSelector(hallsState);
     useEffect(() => {
-        dispatch(setCurrentTimeline(new CurrentTimeline().fromSeances(seances).serialize()));
+        dispatch(setCurrentTimeline(new CurrentTimeline().fillFromSeances(seances).serialize()));
     }, [seances])
     const onAddMovieButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
         if (!validateEditAndNotice(isEditAvailable)) {
@@ -49,11 +49,11 @@ export function SeanceTimes() {
         setActiveMoviePopup(false);
     }
     const saveSeanceCallback = (data: SeanceData): void => {
-        dispatch(setCurrentTimeline(new CurrentTimeline().fromData(currentTimeline).addChange(data).serialize()));
+        dispatch(setCurrentTimeline(new CurrentTimeline().fillFromData(currentTimeline).addChange(data).serialize()));
         setActiveSeancePopup(false);
     }
     const deleteSeanceCallback = (data: SeanceData): void => {
-        dispatch(setCurrentTimeline(new CurrentTimeline().fromData(currentTimeline).addDelete(data).serialize()));
+        dispatch(setCurrentTimeline(new CurrentTimeline().fillFromData(currentTimeline).addDelete(data).serialize()));
         setActiveSeancePopup(false);
     }
     const cancelSeanceCallback = () => {
@@ -84,7 +84,7 @@ export function SeanceTimes() {
         dispatch(saveCurrentTimeline(currentTimeline))
     }
     const onCancelClick = ():void => {
-        dispatch(setCurrentTimeline(new CurrentTimeline().fromSeances(seances).serialize()));
+        dispatch(setCurrentTimeline(new CurrentTimeline().fillFromSeances(seances).serialize()));
     }
 
     const [colorsMap, setColorsMap] = useState({} as ColorsMap)
@@ -99,7 +99,7 @@ export function SeanceTimes() {
         setColorsMap(colorsMap);
     }, [movies, currentTimeline])
 
-    const isButtonsEnabled = new CurrentTimeline().fromData(currentTimeline).hasChanges();
+    const isButtonsEnabled = new CurrentTimeline().fillFromData(currentTimeline).hasChanges();
 
     return (
         <>
@@ -128,7 +128,7 @@ export function SeanceTimes() {
                                         onNewSeanceClick();
                                     }
                             }>
-                                {new CurrentTimeline().fromData(currentTimeline).getActualSeances()
+                                {new CurrentTimeline().fillFromData(currentTimeline).getActualSeances()
                                     .filter(s => s.hall.id === h.id)
                                     .sort((s1,s2) => new Time().fillFromTimeData(s1.start)
                                         .compare(new Time().fillFromTimeData(s2.start)))
