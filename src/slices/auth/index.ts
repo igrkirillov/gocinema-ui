@@ -1,7 +1,6 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {AuthState, CurrentPricingData, User} from "../../types";
+import {AuthState, User} from "../../types";
 import config from "../../../config/app.json"
-import {ROLE_ADMIN} from "../../constants";
 import {getUserByLogin} from "../../serverApi";
 
 const createSliceWithThunk = buildCreateSlice({
