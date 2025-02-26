@@ -154,6 +154,9 @@ export function SeanceTimes() {
                     </div>
                 )
             })}
+            <div className={styles["text-center"]}>
+                {seancesError ? (<span className={styles["conf-step__button"]} style={{"color": "red", "border": "0px"}}>{seancesError}</span>) : null}
+            </div>
             <fieldset className={styles["conf-step__buttons"] + " " + styles["text-center"]}>
                 <button className={styles["conf-step__button"] + " " + styles["conf-step__button-regular"]}
                         disabled={!isButtonsEnabled}

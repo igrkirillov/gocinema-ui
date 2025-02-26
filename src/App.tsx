@@ -23,7 +23,7 @@ function App() {
     return (
         <AuthContext.Provider value={{ user, setUser }}>
             <Routes>
-                <Route path="/" element={<Navigate to="/admin"/>}/>
+                <Route path="/" element={<Navigate to="/client"/>}/>
                 <Route path="/login" element={<Login></Login>}/>
                 <Route path="/admin" element={<Admin></Admin>}/>
                 <Route path="/client" element={<Client></Client>}>

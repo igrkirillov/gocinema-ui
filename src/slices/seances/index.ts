@@ -49,6 +49,8 @@ export const seancesSlice = createSliceWithThunk({
         saveCurrentTimeline: create.asyncThunk<Seance[], CurrentTimelineData>(
             async  (currentTimeline, thunkApi) => {
                 try {
+                    // проверка консистентности сетки сеансов перед сохранением
+                    new CurrentTimeline().fromData(currentTimeline).checkConsistency();
                     const currentUser = getCurrentUser(thunkApi.getState());
                     for (let add of currentTimeline.added) {
                         await saveNewSeance(currentUser, add);
@@ -82,7 +84,8 @@ export const seancesSlice = createSliceWithThunk({
             }),
         setCurrentTimeline: create.reducer((state, action: PayloadAction<CurrentTimelineData>) => {
             state.currentTimeline = action.payload ? action.payload : new CurrentTimeline().serialize();
-        }),
+            state.error = null;
+        })
     })
 })
 

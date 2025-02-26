@@ -34,7 +34,7 @@ export class Time {
         } as TimeData;
     }
 
-    compare(other: TimeData): number {
+    compare(other: TimeData | Time): number {
         if (this.compareByHours(other) > 1) {
             return 1;
         } else if (this.compareByHours(other) < 1) {
@@ -71,5 +71,11 @@ export class Time {
 
     toMinutes(): number {
         return this.hours * 60 + this.minutes;
+    }
+
+    addMinutes(minutes: number) {
+        this.hours += +Number(minutes / 60).toFixed(0);
+        this.minutes += minutes % 60;
+        return this;
     }
 }

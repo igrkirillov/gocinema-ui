@@ -23,14 +23,14 @@ export function getHallByIdOrThrow(id: number | null, halls: Hall[]): Hall {
 export function toMovieData(movie: Movie | null): MovieData {
     return (movie ? {
         id: movie.id,
-        newId: null,
+        uiId: null,
         name: movie.name,
         description: movie.description,
         country: movie.country,
         duration: movie.duration
     } : {
         id: null,
-        newId: new Date().getTime(),
+        uiId: new Date().getTime(),
         name: null,
         description: null,
         country: null,
@@ -41,13 +41,13 @@ export function toMovieData(movie: Movie | null): MovieData {
 export function toSeanceData(seance: Seance | null): SeanceData {
     return (seance ? {
         id: seance.id,
-        newId: null,
+        uiId: null,
         hall: seance.hall,
         movie: seance.movie,
         start: new Time().fillFromString(seance.start).serialize()
     } : {
         id: null,
-        newId: new Date().getTime(),
+        uiId: new Date().getTime(),
         hall: null,
         movie: null,
         start: null

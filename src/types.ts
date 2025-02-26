@@ -95,7 +95,7 @@ export type MovieData = {
      * Служит для идентификации добавленного элемента.
      * Заполняется при создании на UI.
      */
-    newId: number | null,
+    uiId: number | null,
     name: string,
     description: string,
     country: string,
@@ -127,7 +127,7 @@ export type SeanceData = {
      * Служит для идентификации добавленного элемента.
      * Заполняется при создании на UI.
      */
-    newId: number | null,
+    uiId: number | null,
     hall: Hall,
     movie: Movie,
     start: TimeData,

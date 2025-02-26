@@ -1,5 +1,6 @@
 import {CurrentTimelineData, Seance, SeanceData} from "../types";
-import {toSeanceData} from "./dataUtils";
+import {formatTime, toSeanceData} from "./dataUtils";
+import {Time} from "./Time";
 
 export class CurrentTimeline {
     seances: Seance[];
@@ -82,7 +83,7 @@ export class CurrentTimeline {
     addChange(data: SeanceData): CurrentTimeline {
         if (!data.id) {
             // если новый элемент
-            const index = this.added.findIndex(ad => ad.newId === data.newId);
+            const index = this.added.findIndex(ad => ad.uiId === data.uiId);
             if (index < 0) {
                 this.added.push(data);
             } else {
@@ -103,5 +104,36 @@ export class CurrentTimeline {
     addDelete(data: SeanceData): CurrentTimeline {
         this.deleted.push(data);
         return this;
+    }
+
+    /**
+     * Проверить консистентность сетки сеансов.
+     * Если сетка не консистентна, то выбросить исключение Error.
+     */
+    checkConsistency() {
+        const seances = this.getActualSeances();
+        const hallIds = [...new Set(seances.map(s => s.hall.id))];
+
+        for (const hallId of hallIds) {
+            const hallSeances = seances.filter(s => s.hall.id === hallId)
+                .sort((s1, s2) => new Time().fillFromTimeData(s1.start).compare(s2.start));
+            for (let i = 0; i < hallSeances.length; ++i) {
+                if (i !== hallSeances.length-1) {
+                    const currentEnd = new Time().fillFromTimeData(hallSeances[i].start)
+                        .addMinutes(hallSeances[i].movie.duration);
+                    const nextStart = new Time().fillFromTimeData(hallSeances[i+1].start);
+                    if (nextStart.compare(currentEnd) < 0) {
+                        throw new Error("Сетка сеансов некорректна. Имеется пересечение. " +
+                            `${hallSeances[i].hall.name} 
+                             ${hallSeances[i].movie.name}
+                             ${formatTime(hallSeances[i].start)}
+                             (${hallSeances[i].movie.duration} мин)
+                              и  ${hallSeances[i+1].movie.name}
+                             ${formatTime(hallSeances[i+1].start)}
+                             `)
+                    }
+                }
+            }
+        }
     }
 }
