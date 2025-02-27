@@ -7,10 +7,13 @@ import {
     Movie,
     MovieData,
     MovieParameters,
-    PlaceParameters, Seance, SeanceData, SeanceParameters, User
+    PlaceParameters,
+    Seance,
+    SeanceData,
+    SeanceParameters,
+    User
 } from "./types";
 import {formatTime} from "./data/dataUtils";
-import {DEFAULT_COLS, DEFAULT_ROWS} from "./constants";
 import {CurrentHall} from "./data/CurrentHall";
 
 export async function getHalls(user: User): Promise<Hall[]> {
@@ -42,17 +45,15 @@ export async function deleteHallById(user: User, hallId: number) {
     }
 }
 
-export async function createNextHall(user: User, allHalls: Hall[]): Promise<Hall> {
-    const maxNumber = allHalls.map(h => Number(h.name.substring(4, h.name.length)))
-        .reduce((prev, current) => Math.max(prev, current), 0);
+export async function createNewHall(user: User, hall: Hall): Promise<Hall> {
     const response = await fetch(config.serverUrl + "/halls",
         {
                 method: "POST",
                 body: JSON.stringify({
-                    name: `Зал ${maxNumber + 1}`,
-                    cols: DEFAULT_COLS,
-                    rows: DEFAULT_ROWS,
-                    places: new CurrentHall().filleFromParameters(DEFAULT_ROWS, DEFAULT_COLS).refill().places.map(p => {
+                    name: hall.name,
+                    cols: hall.cols,
+                    rows: hall.rows,
+                    places: new CurrentHall().filleFromParameters(hall.rows, hall.cols).refill().places.map(p => {
                         return {
                             row: p.row,
                             col: p.col

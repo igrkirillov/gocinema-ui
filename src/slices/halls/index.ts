@@ -1,6 +1,6 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
 import {CurrentHallData, CurrentPricingData, Hall, HallsState} from "../../types";
-import {createNextHall, deleteHallById, getHalls, patchHall, savePricing} from "../../serverApi";
+import {deleteHallById, getHalls, patchHall, savePricing, createNewHall} from "../../serverApi";
 import {getHallByIdOrThrow} from "../../data/dataUtils";
 import {getCurrentUser} from "../../store/storeUtils";
 
@@ -73,12 +73,11 @@ export const hallsSlice = createSliceWithThunk({
                     state.loading = false;
                 }
             }),
-        createNewHall: create.asyncThunk<Hall[], Hall[]>(
-            async  (allHalls, thunkApi) => {
+        createHall: create.asyncThunk<Hall, Hall>(
+            async  (hall, thunkApi) => {
                 try {
                     const currentUser = getCurrentUser(thunkApi.getState());
-                    await createNextHall(currentUser, allHalls);
-                    return await getHalls(currentUser);
+                    return await createNewHall(currentUser, hall);
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
@@ -88,8 +87,8 @@ export const hallsSlice = createSliceWithThunk({
                     state.loading = true;
                     state.error = null;
                 },
-                fulfilled: (state, action: PayloadAction<Hall[]>) => {
-                    state.data = action.payload ? action.payload : [] as Hall[];
+                fulfilled: (state, action: PayloadAction<Hall>) => {
+                    state.data.push(action.payload);
                 },
                 rejected: (state, action) => {
                     state.error = action.payload as string;
@@ -189,6 +188,6 @@ export const hallsSlice = createSliceWithThunk({
     })
 })
 
-export const {fetchHalls, deleteHall, createNewHall, updateCurrentHall, saveCurrentHall, cancelCurrentHall,
+export const {fetchHalls, deleteHall, createHall, updateCurrentHall, saveCurrentHall, cancelCurrentHall,
     updateCurrentPricing, saveCurrentPricing, cancelCurrentPricing} = hallsSlice.actions;
 export const {halls, hallsState} = hallsSlice.selectors;
