@@ -9,6 +9,9 @@ import Login from "./pages/login/login";
 import {User} from "./types";
 import {useAppDispatch, useAppSelector} from "./hooks/storeHooks";
 import {clearUser, currentUser, loginUser} from "./slices/auth";
+import {Payment} from "./components/client/payment";
+import {Main} from "./components/client/main";
+import {Buying} from "./components/client/buying";
 
 function App() {
     const dispatch = useAppDispatch();
@@ -29,7 +32,8 @@ function App() {
                 <Route path="/client" element={<Client></Client>}>
                     <Route path="" element={<Navigate to="movies"/>}/>
                     <Route path="movies" element={<MovieSelection></MovieSelection>}/>
-                    <Route path="seances/:id" element={<Booking></Booking>}/>
+                    <Route path="seances/:id" element={<Main><Buying></Buying></Main>}/>
+                    <Route path="seances/:seanceId/payment/:id" element={<Main><Payment></Payment></Main>}/>
                 </Route>
             </Routes>
         </AuthContext.Provider>

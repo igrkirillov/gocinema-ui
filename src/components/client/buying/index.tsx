@@ -1,11 +1,10 @@
 import styles from "../css/styles.module.scss"
-import {useParams} from "react-router";
+import {useNavigate, useParams} from "react-router";
 import {useAppDispatch, useAppSelector} from "../../../hooks/storeHooks";
 import {MouseEvent, useEffect} from "react";
 import {addOrderPlace, buyingState, loadBuying, removeOrderPlace} from "../../../slices/buying";
 import {Spinner} from "../../spinner/Spinner";
 import {Hall, SeancePlace} from "../../../types";
-import {updateCurrentHall} from "../../../slices/halls";
 
 export function Buying() {
     const seanceId = Number(useParams()["id"] as string);
@@ -13,6 +12,7 @@ export function Buying() {
     useEffect(() => {
         dispatch(loadBuying(seanceId));
     }, [seanceId]);
+    const navigate = useNavigate();
     const {seance, orderPlaces, data: places, error, loading} = useAppSelector(buyingState)
     const onPlaceClick = (event: MouseEvent<HTMLSpanElement>) => {
         event.preventDefault();
@@ -25,7 +25,7 @@ export function Buying() {
         }
     }
     const onBookClick = (event: MouseEvent<HTMLButtonElement>) => {
-
+        navigate("./payment/122555")
     }
     return loading || !seance.id ? (<Spinner></Spinner>) : (
         <>
