@@ -1,10 +1,10 @@
-import {useParams} from "react-router";
+import {Main} from "../main";
+import {Buying} from "../buying";
 
 export function Booking() {
-    const seanceId = useParams()["id"] as string;
     return (
-        <>
-            <p>seanceId {seanceId}</p>
-        </>
+        <Main>
+            <Buying></Buying>
+        </Main>
     )
 }

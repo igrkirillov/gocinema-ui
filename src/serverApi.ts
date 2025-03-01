@@ -10,7 +10,7 @@ import {
     PlaceParameters,
     Seance,
     SeanceData,
-    SeanceParameters,
+    SeanceParameters, SeancePlace,
     User
 } from "./types";
 import {formatTime} from "./data/dataUtils";
@@ -319,6 +319,21 @@ export async function getUserByLogin(user: User): Promise<User> {
     });
     if (response.ok) {
         return await response.json() as User;
+    } else {
+        console.log(response)
+        throw Error(getErrorMessage(response));
+    }
+}
+
+export async function getSeancePlaces(user: User, seanceId: number): Promise<SeancePlace[]> {
+    const response = await fetch(config.serverUrl + "/movie-show-places?movieShowId=" + seanceId, {
+        method: "GET",
+        headers: {
+            ...authHeader(user)
+        }
+    });
+    if (response.ok) {
+        return await response.json() as SeancePlace[];
     } else {
         console.log(response)
         throw Error(getErrorMessage(response));

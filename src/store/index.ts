@@ -6,6 +6,7 @@ import {seancesSlice} from "../slices/seances";
 import {optionsSlice} from "../slices/options";
 import {clientSlice} from "../slices/client";
 import {authSlice} from "../slices/auth";
+import {buyingSlice} from "../slices/buying";
 
 
 export const store = configureStore({
@@ -16,7 +17,8 @@ export const store = configureStore({
         seances: seancesSlice.reducer,
         options: optionsSlice.reducer,
         client: clientSlice.reducer,
-        auth: authSlice.reducer
+        auth: authSlice.reducer,
+        buying: buyingSlice.reducer
     },
     devTools: true
 })

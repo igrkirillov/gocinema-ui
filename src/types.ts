@@ -173,3 +173,14 @@ export type DayTimes = {
 export type AuthState = LoadingState & {
     user: User | null
 }
+
+export type SeancePlace = {
+    movieShow: Seance,
+    hallPlace: Place,
+    isBooked: boolean
+}
+
+export type BuyingState = ArrayDataState<SeancePlace> & {
+    seance: Seance,
+    orderPlaces: Place[]
+}
