@@ -1,10 +1,11 @@
 import styles from "../css/styles.module.scss"
 import {useParams} from "react-router";
 import {useAppDispatch, useAppSelector} from "../../../hooks/storeHooks";
-import {useEffect} from "react";
-import {buyingState, loadBuying} from "../../../slices/buying";
+import {MouseEvent, useEffect} from "react";
+import {addOrderPlace, buyingState, loadBuying, removeOrderPlace} from "../../../slices/buying";
 import {Spinner} from "../../spinner/Spinner";
 import {Hall, SeancePlace} from "../../../types";
+import {updateCurrentHall} from "../../../slices/halls";
 
 export function Buying() {
     const seanceId = Number(useParams()["id"] as string);
@@ -13,6 +14,17 @@ export function Buying() {
         dispatch(loadBuying(seanceId));
     }, [seanceId]);
     const {seance, orderPlaces, data: places, error, loading} = useAppSelector(buyingState)
+    const onPlaceClick = (event: MouseEvent<HTMLSpanElement>) => {
+        event.preventDefault();
+        const id = Number(event.currentTarget.dataset["id"]);
+        const orderedIndex = orderPlaces.findIndex(o => o.id === id);
+        if (orderedIndex >= 0) {
+            dispatch(removeOrderPlace(orderPlaces[orderedIndex]));
+        } else {
+            console.log(places.find(pl => pl.id === id))
+            dispatch(addOrderPlace(places.find(pl => pl.id === id) as SeancePlace));
+        }
+    }
     return loading || !seance.id ? (<Spinner></Spinner>) : (
         <>
             <section className={styles["buying"]}>
@@ -28,12 +40,13 @@ export function Buying() {
                 </div>
                 <div className={styles["buying-scheme"]}>
                     <div className={styles["buying-scheme__wrapper"]}>
-                        {toRows(seance.hall, places).map(places => (
+                        {toRowArrays(seance.hall, places).map(places => (
                             <div className={styles["buying-scheme__row"]}>
                                 {places.map(pl => (
-                                        // <span className={styles["buying-scheme__chair"] + " " + styles["buying-scheme__chair_disabled"]}></span>
-                                        // <span className={styles["buying-scheme__chair"] + " " + styles["buying-buying-scheme__chair_standart"]}></span>
-                                        <span className={styles["buying-scheme__chair"] + " " + styles["buying-scheme__chair_vip"]}></span>
+                                        <span className={styles["buying-scheme__chair"] + " " + getStyleClass(pl, orderPlaces)}
+                                        onClick={isClickablePlace(pl) ? onPlaceClick : (() => {})}
+                                        data-id={pl.id}
+                                        style={{"cursor": isClickablePlace(pl) ? "pointer" : ""}}></span>
                                     ))
                                }
                             </div>
@@ -62,7 +75,7 @@ export function Buying() {
     )
 }
 
-function toRows(hall: Hall, places: SeancePlace[]):SeancePlace[][] {
+function toRowArrays(hall: Hall, places: SeancePlace[]):SeancePlace[][] {
     const rows = [];
     for (let row = 0; row < hall.rows; ++row) {
         const cols = [];
@@ -72,4 +85,23 @@ function toRows(hall: Hall, places: SeancePlace[]):SeancePlace[][] {
         rows.push(cols);
     }
     return rows as SeancePlace[][];
+}
+
+function getStyleClass(place: SeancePlace, orderedPlaces: SeancePlace[]): string {
+    const isOrdered = orderedPlaces.findIndex(o => o.id === place.id) >= 0;
+    if (isOrdered) {
+        return styles["buying-scheme__chair_selected"];
+    } else if (place.hallPlace.isBlocked) {
+        return styles["buying-scheme__chair_disabled"];
+    } else if (place.isBooked) {
+        return styles["buying-scheme__chair_taken"];
+    } else if (place.hallPlace.isVip) {
+        return styles["buying-scheme__chair_vip"];
+    } else {
+        return styles["buying-scheme__chair_standart"];
+    }
+}
+
+function isClickablePlace(place: SeancePlace): boolean {
+    return !place.isBooked && !place.hallPlace.isBlocked;
 }

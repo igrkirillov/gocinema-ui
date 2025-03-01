@@ -175,6 +175,7 @@ export type AuthState = LoadingState & {
 }
 
 export type SeancePlace = {
+    id: number,
     movieShow: Seance,
     hallPlace: Place,
     isBooked: boolean
@@ -182,5 +183,5 @@ export type SeancePlace = {
 
 export type BuyingState = ArrayDataState<SeancePlace> & {
     seance: Seance,
-    orderPlaces: Place[]
+    orderPlaces: SeancePlace[]
 }

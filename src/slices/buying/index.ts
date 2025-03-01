@@ -1,5 +1,5 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {BuyingState, Place, Seance, SeancePlace} from "../../types";
+import {BuyingState, Seance, SeancePlace} from "../../types";
 import {getSeancePlaces} from "../../serverApi";
 import {getCurrentUser} from "../../store/storeUtils";
 
@@ -52,11 +52,11 @@ export const buyingSlice = createSliceWithThunk({
                     state.loading = false;
                 }
             }),
-        addOrderPlace: create.reducer((state, action: PayloadAction<Place>) => {
+        addOrderPlace: create.reducer((state, action: PayloadAction<SeancePlace>) => {
             state.orderPlaces.push(action.payload);
         }),
-        removeOrderPlace: create.reducer((state, action: PayloadAction<Place>) => {
-            const index = state.orderPlaces.findIndex(el => el.col === action.payload.col && el.row === action.payload.row);
+        removeOrderPlace: create.reducer((state, action: PayloadAction<SeancePlace>) => {
+            const index = state.orderPlaces.findIndex(el => el.id === action.payload.id);
             if (index >= 0) {
                 state.orderPlaces.splice(index, 1);
             }
