@@ -21,9 +21,11 @@ export function Buying() {
         if (orderedIndex >= 0) {
             dispatch(removeOrderPlace(orderPlaces[orderedIndex]));
         } else {
-            console.log(places.find(pl => pl.id === id))
             dispatch(addOrderPlace(places.find(pl => pl.id === id) as SeancePlace));
         }
+    }
+    const onBookClick = (event: MouseEvent<HTMLButtonElement>) => {
+
     }
     return loading || !seance.id ? (<Spinner></Spinner>) : (
         <>
@@ -40,10 +42,10 @@ export function Buying() {
                 </div>
                 <div className={styles["buying-scheme"]}>
                     <div className={styles["buying-scheme__wrapper"]}>
-                        {toRowArrays(seance.hall, places).map(places => (
-                            <div className={styles["buying-scheme__row"]}>
+                        {toRowArrays(seance.hall, places).map((places, row) => (
+                            <div key={row} className={styles["buying-scheme__row"]}>
                                 {places.map(pl => (
-                                        <span className={styles["buying-scheme__chair"] + " " + getStyleClass(pl, orderPlaces)}
+                                        <span key={pl.id} className={styles["buying-scheme__chair"] + " " + getStyleClass(pl, orderPlaces)}
                                         onClick={isClickablePlace(pl) ? onPlaceClick : (() => {})}
                                         data-id={pl.id}
                                         style={{"cursor": isClickablePlace(pl) ? "pointer" : ""}}></span>
@@ -69,7 +71,7 @@ export function Buying() {
                         </div>
                     </div>
                 </div>
-                <button className={styles["acceptin-button"]} onClick="location.href='payment.html'">Забронировать</button>
+                <button disabled={orderPlaces.length == 0} className={styles["acceptin-button"]} onClick={onBookClick}>Забронировать</button>
             </section>
         </>
     )

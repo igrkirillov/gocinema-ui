@@ -27,7 +27,6 @@ export const buyingSlice = createSliceWithThunk({
         loadBuying: create.asyncThunk<SeancePlace[], number>(
             async  (seanceId, thunkApi) => {
                 try {
-                    console.log(seanceId)
                     const currentUser = getCurrentUser(thunkApi.getState());
                     return await getSeancePlaces(currentUser, seanceId);
                 } catch (e) {
@@ -40,7 +39,6 @@ export const buyingSlice = createSliceWithThunk({
                     state.error = null;
                 },
                 fulfilled: (state, action: PayloadAction<SeancePlace[]>) => {
-                    console.debug(action.payload)
                     state.data = action.payload;
                     // считаем, что хотя бы одно место должно быть в зале
                     state.seance = action.payload[0].movieShow;

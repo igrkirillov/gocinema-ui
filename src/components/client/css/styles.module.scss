@@ -3,6 +3,7 @@ $font-stack: 'Roboto', sans-serif;
 $black: #000000;
 $white: #FFFFFF;
 $green: #16A6AF;
+$grey: #848484;
 
 
 * {
@@ -222,6 +223,15 @@ body {
   font-size: 1.4rem;  
   background-color: $green;  
   color: $white;  
+}
+
+.acceptin-button:disabled {
+  background-color: $grey;
+
+  &:hover,
+  &:focus{
+    background-color: $grey;
+  }
 }
 
 .buying {
