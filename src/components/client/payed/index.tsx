@@ -3,7 +3,7 @@ import {useAppSelector} from "../../../hooks/storeHooks";
 import {buyingState} from "../../../slices/buying";
 import {useEffect} from "react";
 import {useNavigate} from "react-router";
-import qr from "../../../assets/qr-code.png"
+import {QRCodeSVG} from 'qrcode.react';
 
 export function Payed() {
     const navigate = useNavigate();
@@ -42,7 +42,7 @@ export function Payed() {
                         </span>
                 </p>
 
-                <img className={styles["ticket__info-qr"]} src={qr}></img>
+                <QRCodeSVG className={styles["qr"]} size="20rem" value={ticket?.qrCode as string}/>
                     <p className={styles["ticket__hint"]}>Покажите QR-код нашему контроллеру для подтверждения бронирования.</p>
                     <p className={styles["ticket__hint"]}>Приятного просмотра!</p>
             </div>
