@@ -1,16 +1,17 @@
 import config from "../config/app.json";
 import {
+    BookingTicketParameters,
     CurrentHallData,
     CurrentPricingData,
     Hall,
     HallParameters,
     Movie,
     MovieData,
-    MovieParameters,
+    MovieParameters, PaymentTicketParameters,
     PlaceParameters,
     Seance,
     SeanceData,
-    SeanceParameters, SeancePlace,
+    SeanceParameters, SeancePlace, Ticket,
     User
 } from "./types";
 import {formatTime} from "./data/dataUtils";
@@ -334,6 +335,46 @@ export async function getSeancePlaces(user: User, seanceId: number): Promise<Sea
     });
     if (response.ok) {
         return await response.json() as SeancePlace[];
+    } else {
+        console.log(response)
+        throw Error(getErrorMessage(response));
+    }
+}
+
+export async function makeBookTicket(user: User, places: SeancePlace[]): Promise<Ticket> {
+    const response = await fetch(config.serverUrl + "/tickets/book",
+        {
+            method: "POST",
+            body: JSON.stringify({
+                movieShowPlaceIds: places.map(pl => pl.id)
+            } as BookingTicketParameters),
+            headers: {
+                'Content-Type': 'application/json',
+                ...authHeader(user)
+            },
+        });
+    if (response.ok) {
+        return await response.json() as Ticket;
+    } else {
+        console.log(response)
+        throw Error(getErrorMessage(response));
+    }
+}
+
+export async function makePayTicket(user: User, ticket: Ticket): Promise<Ticket> {
+    const response = await fetch(config.serverUrl + `/tickets/${ticket.id}/pay`,
+        {
+            method: "POST",
+            body: JSON.stringify({
+                card: "9999 9999 9999 9999"
+            } as PaymentTicketParameters),
+            headers: {
+                'Content-Type': 'application/json',
+                ...authHeader(user)
+            },
+        });
+    if (response.ok) {
+        return await response.json() as Ticket;
     } else {
         console.log(response)
         throw Error(getErrorMessage(response));

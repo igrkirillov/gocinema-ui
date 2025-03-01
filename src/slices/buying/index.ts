@@ -1,6 +1,6 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {BuyingState, Seance, SeancePlace} from "../../types";
-import {getSeancePlaces} from "../../serverApi";
+import {BuyingState, Seance, SeancePlace, Ticket} from "../../types";
+import {bookTicket, getSeancePlaces, makeBookTicket, makePayTicket} from "../../serverApi";
 import {getCurrentUser} from "../../store/storeUtils";
 
 const createSliceWithThunk = buildCreateSlice({
@@ -12,7 +12,8 @@ const initialState = {
     loading: false,
     error: null,
     orderPlaces: [],
-    seance: {} as Seance
+    seance: {} as Seance,
+    bookedTicket: null
 } as BuyingState;
 
 
@@ -59,8 +60,60 @@ export const buyingSlice = createSliceWithThunk({
                 state.orderPlaces.splice(index, 1);
             }
         }),
+        bookTicket: create.asyncThunk<Ticket>(
+            async  (__, thunkApi) => {
+                try {
+                    const currentUser = getCurrentUser(thunkApi.getState());
+                    const orderPlaces = (thunkApi.getState()["buying"] as BuyingState).orderPlaces;
+                    return await makeBookTicket(currentUser, orderPlaces);
+                } catch (e) {
+                    return thunkApi.rejectWithValue((e as Error).message);
+                }
+            },
+            {
+                pending: (state) => {
+                    state.loading = true;
+                    state.error = null;
+                },
+                fulfilled: (state, action: PayloadAction<Ticket>) => {
+                    state.bookedTicket = action.payload;
+                    state.orderPlaces = [];
+                },
+                rejected: (state, action) => {
+                    state.error = action.payload as string;
+                },
+                settled: (state) => {
+                    state.loading = false;
+                }
+            }),
+        payTicket: create.asyncThunk<Ticket>(
+            async  (__, thunkApi) => {
+                try {
+                    const currentUser = getCurrentUser(thunkApi.getState());
+                    const bookedTicket = (thunkApi.getState()["buying"] as BuyingState).bookedTicket as Ticket;
+                    return await makePayTicket(currentUser, bookedTicket);
+                } catch (e) {
+                    return thunkApi.rejectWithValue((e as Error).message);
+                }
+            },
+            {
+                pending: (state) => {
+                    state.loading = true;
+                    state.error = null;
+                },
+                fulfilled: (state, action: PayloadAction<Ticket>) => {
+                    state.bookedTicket = action.payload;
+                    state.orderPlaces = [];
+                },
+                rejected: (state, action) => {
+                    state.error = action.payload as string;
+                },
+                settled: (state) => {
+                    state.loading = false;
+                }
+            })
     })
 })
 
-export const {loadBuying, addOrderPlace, removeOrderPlace} = buyingSlice.actions;
+export const {loadBuying, addOrderPlace, removeOrderPlace, bookTicket, payTicket} = buyingSlice.actions;
 export const {buyingState, orderPlaces} = buyingSlice.selectors;

@@ -183,5 +183,22 @@ export type SeancePlace = {
 
 export type BuyingState = ArrayDataState<SeancePlace> & {
     seance: Seance,
-    orderPlaces: SeancePlace[]
+    orderPlaces: SeancePlace[],
+    bookedTicket: Ticket | null
+}
+
+export type Ticket = {
+    id: number,
+    isPayed: boolean,
+    user: User,
+    qrCode: string,
+    movieShowPlaces: SeancePlace[]
+}
+
+export type BookingTicketParameters = {
+    movieShowPlaceIds: number[]
+}
+
+export type PaymentTicketParameters = {
+    card: string
 }

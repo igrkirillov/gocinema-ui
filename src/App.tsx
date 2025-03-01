@@ -12,6 +12,7 @@ import {clearUser, currentUser, loginUser} from "./slices/auth";
 import {Payment} from "./components/client/payment";
 import {Main} from "./components/client/main";
 import {Buying} from "./components/client/buying";
+import {Payed} from "./components/client/payed";
 
 function App() {
     const dispatch = useAppDispatch();
@@ -33,7 +34,8 @@ function App() {
                     <Route path="" element={<Navigate to="movies"/>}/>
                     <Route path="movies" element={<MovieSelection></MovieSelection>}/>
                     <Route path="seances/:id" element={<Main><Buying></Buying></Main>}/>
-                    <Route path="seances/:seanceId/payment/:id" element={<Main><Payment></Payment></Main>}/>
+                    <Route path="tickets/:id" element={<Main><Payment></Payment></Main>}/>
+                    <Route path="tickets/:id/payed" element={<Main><Payed></Payed></Main>}/>
                 </Route>
             </Routes>
         </AuthContext.Provider>

@@ -2,7 +2,7 @@ import styles from "../css/styles.module.scss"
 import {useNavigate, useParams} from "react-router";
 import {useAppDispatch, useAppSelector} from "../../../hooks/storeHooks";
 import {MouseEvent, useEffect} from "react";
-import {addOrderPlace, buyingState, loadBuying, removeOrderPlace} from "../../../slices/buying";
+import {addOrderPlace, bookTicket, buyingState, loadBuying, removeOrderPlace} from "../../../slices/buying";
 import {Spinner} from "../../spinner/Spinner";
 import {Hall, SeancePlace} from "../../../types";
 
@@ -13,7 +13,13 @@ export function Buying() {
         dispatch(loadBuying(seanceId));
     }, [seanceId]);
     const navigate = useNavigate();
-    const {seance, orderPlaces, data: places, error, loading} = useAppSelector(buyingState)
+    const {seance, orderPlaces, data: places, error, loading, bookedTicket} = useAppSelector(buyingState);
+    useEffect(() => {
+        // если билет есть и он не оплачен, тогда перейти на форму оплаты
+        if (bookedTicket && !bookedTicket.isPayed) {
+            navigate(`/client/tickets/${bookedTicket.id}`)
+        }
+    }, [bookedTicket]);
     const onPlaceClick = (event: MouseEvent<HTMLSpanElement>) => {
         event.preventDefault();
         const id = Number(event.currentTarget.dataset["id"]);
@@ -25,7 +31,8 @@ export function Buying() {
         }
     }
     const onBookClick = (event: MouseEvent<HTMLButtonElement>) => {
-        navigate("./payment/122555")
+        event.preventDefault()
+        dispatch(bookTicket());
     }
     return loading || !seance.id ? (<Spinner></Spinner>) : (
         <>
