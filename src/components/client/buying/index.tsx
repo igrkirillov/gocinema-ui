@@ -66,10 +66,10 @@ export function Buying() {
                     <div className={styles["col"]}>
                         <p className={styles["buying-scheme__legend-price"]}><span
                             className={styles["buying-scheme__chair"] + " " + styles["buying-scheme__chair_standart"]}></span> Свободно (<span
-                            className={styles["buying-scheme__legend-value"]}>250</span>руб)</p>
+                            className={styles["buying-scheme__legend-value"]}>{seance.hall.standardPrice}</span>руб)</p>
                         <p className={styles["buying-scheme__legend-price"]}><span
                             className={styles["buying-scheme__chair"] + " " + styles["buying-scheme__chair_vip"]}></span> Свободно VIP (<span
-                            className={styles["buying-scheme__legend-value"]}>350</span>руб)</p>
+                            className={styles["buying-scheme__legend-value"]}>{seance.hall.vipPrice}</span>руб)</p>
                     </div>
                     <div className={styles["col"]}>
                         <p className={styles["buying-scheme__legend-price"]}><span
