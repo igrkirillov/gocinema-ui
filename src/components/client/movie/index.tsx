@@ -29,6 +29,7 @@ export function Movie(props: MovieProps) {
                     <p className={styles["movie__synopsis"]}>{movie.description}</p>
                     <p className={styles["movie__data"]}>
                         <span className={styles["movie__data-duration"]}>{movie.duration} минут</span>
+                        <span> </span>
                         <span className={styles["movie__data-origin"]}>{movie.country}</span>
                     </p>
                 </div>

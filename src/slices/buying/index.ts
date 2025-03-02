@@ -49,6 +49,8 @@ export const buyingSlice = createSliceWithThunk({
                     state.data = action.payload.bookedPlaces;
                     state.seance = action.payload.seance;
                     state.seanceDate = action.payload.seanceDate;
+                    state.orderPlaces = [];
+                    state.bookedTicket = null;
                 },
                 rejected: (state, action) => {
                     state.error = action.payload as string;
@@ -73,7 +75,7 @@ export const buyingSlice = createSliceWithThunk({
                     const orderPlaces = (thunkApi.getState()["buying"] as BuyingState).orderPlaces;
                     const seanceDate = (thunkApi.getState()["buying"] as BuyingState).seanceDate;
                     const seance = (thunkApi.getState()["buying"] as BuyingState).seance;
-                    return await makeBookTicket(currentUser, orderPlaces, seanceDate, seance);
+                    return await makeBookTicket(currentUser, orderPlaces, seanceDate, seance as Seance);
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
