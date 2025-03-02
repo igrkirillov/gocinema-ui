@@ -18,7 +18,6 @@ export function Movie(props: MovieProps) {
         const seanceId = event.currentTarget.dataset["id"] as string;
         navigate(`/client/seances/${seanceId}/${dateToISOFormat(date)}`)
     }
-    console.debug(timesMap)
     return (
         <section className={styles["movie"]}>
             <div className={styles["movie__info"]}>
