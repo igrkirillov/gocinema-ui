@@ -1,6 +1,6 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {BuyingState, Seance, SeancePlace, Ticket} from "../../types";
-import {bookTicket, getSeancePlaces, makeBookTicket, makePayTicket} from "../../serverApi";
+import {BookedPlace, BuyingState, Place, Seance, Ticket} from "../../types";
+import {getBookedPlaces, getSeance, makeBookTicket, makePayTicket} from "../../serverApi";
 import {getCurrentUser} from "../../store/storeUtils";
 
 const createSliceWithThunk = buildCreateSlice({
@@ -12,7 +12,8 @@ const initialState = {
     loading: false,
     error: null,
     orderPlaces: [],
-    seance: {} as Seance,
+    seance: null,
+    seanceDate: "",
     bookedTicket: null
 } as BuyingState;
 
@@ -25,11 +26,15 @@ export const buyingSlice = createSliceWithThunk({
         buyingState: (state) => state
     },
     reducers: (create) => ({
-        loadBuying: create.asyncThunk<SeancePlace[], number>(
-            async  (seanceId, thunkApi) => {
+        loadBuying: create.asyncThunk<{bookedPlaces: BookedPlace[], seance: Seance, seanceDate: string}, {seanceId: number, seanceDate: string}>(
+            async  ({seanceId, seanceDate}, thunkApi) => {
                 try {
                     const currentUser = getCurrentUser(thunkApi.getState());
-                    return await getSeancePlaces(currentUser, seanceId);
+                    return {
+                        bookedPlaces: await getBookedPlaces(currentUser, seanceId, seanceDate),
+                        seance: await getSeance(currentUser, seanceId),
+                        seanceDate: seanceDate
+                    };
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
@@ -39,10 +44,10 @@ export const buyingSlice = createSliceWithThunk({
                     state.loading = true;
                     state.error = null;
                 },
-                fulfilled: (state, action: PayloadAction<SeancePlace[]>) => {
-                    state.data = action.payload;
-                    // считаем, что хотя бы одно место должно быть в зале
-                    state.seance = action.payload[0].movieShow;
+                fulfilled: (state, action: PayloadAction<{bookedPlaces: BookedPlace[], seance: Seance, seanceDate: string}>) => {
+                    state.data = action.payload.bookedPlaces;
+                    state.seance = action.payload.seance;
+                    state.seanceDate = action.payload.seanceDate;
                 },
                 rejected: (state, action) => {
                     state.error = action.payload as string;
@@ -51,10 +56,10 @@ export const buyingSlice = createSliceWithThunk({
                     state.loading = false;
                 }
             }),
-        addOrderPlace: create.reducer((state, action: PayloadAction<SeancePlace>) => {
+        addOrderPlace: create.reducer((state, action: PayloadAction<Place>) => {
             state.orderPlaces.push(action.payload);
         }),
-        removeOrderPlace: create.reducer((state, action: PayloadAction<SeancePlace>) => {
+        removeOrderPlace: create.reducer((state, action: PayloadAction<Place>) => {
             const index = state.orderPlaces.findIndex(el => el.id === action.payload.id);
             if (index >= 0) {
                 state.orderPlaces.splice(index, 1);
@@ -65,7 +70,9 @@ export const buyingSlice = createSliceWithThunk({
                 try {
                     const currentUser = getCurrentUser(thunkApi.getState());
                     const orderPlaces = (thunkApi.getState()["buying"] as BuyingState).orderPlaces;
-                    return await makeBookTicket(currentUser, orderPlaces);
+                    const seanceDate = (thunkApi.getState()["buying"] as BuyingState).seanceDate;
+                    const seance = (thunkApi.getState()["buying"] as BuyingState).seance;
+                    return await makeBookTicket(currentUser, orderPlaces, seanceDate, seance);
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }

@@ -25,23 +25,23 @@ export function Payed() {
             <div className={styles["ticket__info-wrapper"]}>
                 <p className={styles["ticket__info"]}>На фильм:<span> </span>
                     <span className={styles["ticket__details"] + " " + styles["ticket__title"]}>
-                        {ticket?.movieShowPlaces[0].movieShow.movie.name}</span>
+                        {ticket?.bookedPlaces[0].movieShow.movie.name}</span>
                 </p>
                 <p className={styles["ticket__info"]}>Места:<span> </span>
                         <span className={styles["ticket__details"] + " " + styles["ticket__chairs"]}>
-                            {ticket?.movieShowPlaces.map(p => p.hallPlace.row + "-" + p.hallPlace.col)
+                            {ticket?.bookedPlaces.map(p => p.hallPlace.row + "-" + p.hallPlace.col)
                                 .reduce((s1, s2) => s1 + ", " + s2)}
                         </span></p>
                 <p className={styles["ticket__info"]}>В зале:<span> </span>
                         <span className={styles["ticket__details"] + " " + styles["ticket__hall"]}>
-                            {ticket?.movieShowPlaces[0].movieShow.hall.name}
+                            {ticket?.bookedPlaces[0].movieShow.hall.name}
                         </span></p>
                 <p className={styles["ticket__info"]}>Начало сеанса:<span> </span>
                         <span className={styles["ticket__details"] + " " + styles["ticket__start"]}>
-                            {ticket?.movieShowPlaces[0].movieShow.start}
+                            {ticket?.bookedPlaces[0].movieShow.start}
                         </span>
                 </p>
-
+                {/*параметр size принимается только в px, хотя по факту в rem тоже работает*/}
                 <QRCodeSVG className={styles["qr"]} size="20rem" value={ticket?.qrCode as string}/>
                     <p className={styles["ticket__hint"]}>Покажите QR-код нашему контроллеру для подтверждения бронирования.</p>
                     <p className={styles["ticket__hint"]}>Приятного просмотра!</p>

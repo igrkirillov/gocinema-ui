@@ -1,5 +1,6 @@
 import config from "../config/app.json";
 import {
+    BookedPlace,
     BookingTicketParameters,
     CurrentHallData,
     CurrentPricingData,
@@ -7,7 +8,7 @@ import {
     HallParameters,
     Movie,
     MovieData,
-    MovieParameters, PaymentTicketParameters,
+    MovieParameters, PaymentTicketParameters, Place,
     PlaceParameters,
     Seance,
     SeanceData,
@@ -18,7 +19,6 @@ import {formatTime} from "./data/dataUtils";
 import {CurrentHall} from "./data/CurrentHall";
 
 export async function getHalls(user: User): Promise<Hall[]> {
-    console.debug(user)
     const response = await fetch(config.serverUrl + "/halls", {
         method: "GET",
         headers: {
@@ -250,7 +250,6 @@ export async function deleteSeance(user: User, id: number): Promise<void> {
 }
 
 export async function getSeances(user: User): Promise<Seance[]> {
-    console.debug(user)
     const response = await fetch(config.serverUrl + "/movie-shows", {
         method: "GET",
         headers: {
@@ -259,6 +258,21 @@ export async function getSeances(user: User): Promise<Seance[]> {
     });
     if (response.ok) {
         return await response.json() as Seance[];
+    } else {
+        console.log(response)
+        throw Error(getErrorMessage(response));
+    }
+}
+
+export async function getSeance(user: User, id: number): Promise<Seance> {
+    const response = await fetch(config.serverUrl + "/movie-shows/" + id, {
+        method: "GET",
+        headers: {
+            ...authHeader(user)
+        }
+    });
+    if (response.ok) {
+        return await response.json() as Seance;
     } else {
         console.log(response)
         throw Error(getErrorMessage(response));
@@ -326,8 +340,10 @@ export async function getUserByLogin(user: User): Promise<User> {
     }
 }
 
-export async function getSeancePlaces(user: User, seanceId: number): Promise<SeancePlace[]> {
-    const response = await fetch(config.serverUrl + "/movie-show-places?movieShowId=" + seanceId, {
+export async function getBookedPlaces(user: User, seanceId: number, seanceDate: string): Promise<BookedPlace[]> {
+    const response = await fetch(config.serverUrl + "/booked-places?" +
+        "movieShowId=" + seanceId + "&" +
+        "seanceDate=" + seanceDate, {
         method: "GET",
         headers: {
             ...authHeader(user)
@@ -341,12 +357,14 @@ export async function getSeancePlaces(user: User, seanceId: number): Promise<Sea
     }
 }
 
-export async function makeBookTicket(user: User, places: SeancePlace[]): Promise<Ticket> {
+export async function makeBookTicket(user: User, places: Place[], seanceDate: string, seance: Seance): Promise<Ticket> {
     const response = await fetch(config.serverUrl + "/tickets/book",
         {
             method: "POST",
             body: JSON.stringify({
-                movieShowPlaceIds: places.map(pl => pl.id)
+                placeIds: places.map(pl => pl.id),
+                seanceDate: seanceDate,
+                movieShowId: seance.id
             } as BookingTicketParameters),
             headers: {
                 'Content-Type': 'application/json',

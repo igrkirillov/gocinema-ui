@@ -33,7 +33,7 @@ function App() {
                 <Route path="/client" element={<Client></Client>}>
                     <Route path="" element={<Navigate to="movies"/>}/>
                     <Route path="movies" element={<MovieSelection></MovieSelection>}/>
-                    <Route path="seances/:id" element={<Main><Buying></Buying></Main>}/>
+                    <Route path="seances/:id/:date" element={<Main><Buying></Buying></Main>}/>
                     <Route path="tickets/:id" element={<Main><Payment></Payment></Main>}/>
                     <Route path="tickets/:id/payed" element={<Main><Payed></Payed></Main>}/>
                 </Route>

@@ -1,11 +1,23 @@
 import styles from "../css/styles.module.scss"
 import poster from "./poster1.jpg"
 import {DayItem} from "../../../types";
+import {MouseEvent} from "react";
+import {useNavigate} from "react-router";
+import {dateToISOFormat} from "../../../data/dataUtils";
+
 export type MovieProps = {
-    dayItem: DayItem
+    dayItem: DayItem,
+    date: number
 }
 export function Movie(props: MovieProps) {
     const {movie, halls, timesMap} = props.dayItem
+    const {date} = props;
+    const navigate = useNavigate();
+    const onClickSeanceTimeClick = (event: MouseEvent<HTMLAnchorElement>) => {
+        event.preventDefault();
+        const seanceId = event.currentTarget.dataset["id"] as string;
+        navigate(`/client/seances/${seanceId}/${dateToISOFormat(date)}`)
+    }
     return (
         <section className={styles["movie"]}>
             <div className={styles["movie__info"]}>
@@ -29,7 +41,9 @@ export function Movie(props: MovieProps) {
                         {timesMap[h.id].map(s => (
                             <li key={s.id} className={styles["movie-seances__time-block"]}>
                                 <a className={styles["movie-seances__time"]}
-                                   href={"./seances/" + s.id}>{s.start}</a>
+                                   data-id={s.id}
+                                   href="#"
+                                   onClick={onClickSeanceTimeClick}>{s.start}</a>
                             </li>
                         ))}
                     </ul>

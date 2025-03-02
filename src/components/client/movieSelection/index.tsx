@@ -16,7 +16,7 @@ export function MovieSelection() {
         <>
             <Days></Days>
             <Main>
-                {items.map(item => (<Movie key={item.movie.id} dayItem={item}></Movie>))}
+                {items.map(item => (<Movie key={item.movie.id} dayItem={item} date={currentDate}></Movie>))}
             </Main>
         </>
     )

@@ -174,16 +174,17 @@ export type AuthState = LoadingState & {
     user: User | null
 }
 
-export type SeancePlace = {
+export type BookedPlace = {
     id: number,
     movieShow: Seance,
     hallPlace: Place,
-    isBooked: boolean
+    seanceDate: string
 }
 
-export type BuyingState = ArrayDataState<SeancePlace> & {
-    seance: Seance,
-    orderPlaces: SeancePlace[],
+export type BuyingState = ArrayDataState<BookedPlace> & {
+    seance: Seance | null,
+    seanceDate: string,
+    orderPlaces: Place[],
     bookedTicket: Ticket | null
 }
 
@@ -192,11 +193,13 @@ export type Ticket = {
     isPayed: boolean,
     user: User,
     qrCode: string,
-    movieShowPlaces: SeancePlace[]
+    bookedPlaces: BookedPlace[]
 }
 
 export type BookingTicketParameters = {
-    movieShowPlaceIds: number[]
+    placeIds: number[],
+    seanceDate: string,
+    movieShowId: number
 }
 
 export type PaymentTicketParameters = {
