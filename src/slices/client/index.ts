@@ -1,7 +1,8 @@
 import {asyncThunkCreator, buildCreateSlice, createSelector, PayloadAction} from "@reduxjs/toolkit";
 import {ClientState, DayItem, DayTimes, Seance} from "../../types";
-import {getSeances} from "../../serverApi";
+import {getOption, getSeances} from "../../serverApi";
 import {getCurrentUser} from "../../store/storeUtils";
+import {IS_SALE_OPENED_OPTION} from "../../constants";
 
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
@@ -42,9 +43,10 @@ export const clientSlice = createSliceWithThunk({
         fetchDaySeances: create.asyncThunk<Seance[], number>(
             async  (currentDate, thunkApi) => {
                 try {
-                    // по-идее, следует использовать фильтр по дням currentDate
                     const currentUser = getCurrentUser(thunkApi.getState());
-                    return await getSeances(currentUser);
+                    const isSaleOpened = await getOption(currentUser, IS_SALE_OPENED_OPTION) === "true";
+                    // по-идее, следует использовать фильтр по дням currentDate
+                    return isSaleOpened ? await getSeances(currentUser) : [];
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }
