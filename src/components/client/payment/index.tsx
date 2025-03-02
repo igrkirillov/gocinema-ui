@@ -3,6 +3,7 @@ import {useAppDispatch, useAppSelector} from "../../../hooks/storeHooks";
 import {buyingState, payTicket} from "../../../slices/buying";
 import {MouseEvent, useEffect} from "react";
 import {useNavigate} from "react-router";
+import {dateISOStrToRuFormat} from "../../../data/dataUtils";
 export function Payment() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -42,6 +43,11 @@ export function Payment() {
                     <span className={styles["ticket__details"] + " " + styles["ticket__start"]}>
                         {ticket?.bookedPlaces[0].movieShow.start}
                     </span>
+                </p>
+                <p className={styles["ticket__info"]}>Дата сеанса:<span> </span>
+                    <span className={styles["ticket__details"] + " " + styles["ticket__start"]}>
+                            {dateISOStrToRuFormat(ticket?.bookedPlaces[0].seanceDate as string)}
+                        </span>
                 </p>
                 <p className={styles["ticket__info"]}>Стоимость:<span> </span>
                     <span className={styles["ticket__details"] + styles["ticket__cost"]}>

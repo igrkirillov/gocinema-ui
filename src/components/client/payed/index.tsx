@@ -4,6 +4,7 @@ import {buyingState} from "../../../slices/buying";
 import {useEffect} from "react";
 import {useNavigate} from "react-router";
 import {QRCodeSVG} from 'qrcode.react';
+import {dateISOStrToRuFormat} from "../../../data/dataUtils";
 
 export function Payed() {
     const navigate = useNavigate();
@@ -17,11 +18,9 @@ export function Payed() {
     }, [ticket])
     return (
         <section className={styles["ticket"]}>
-
             <header className={styles["tichet__check"]}>
                 <h2 className={styles["ticket__check-title"]}>Электронный билет</h2>
             </header>
-
             <div className={styles["ticket__info-wrapper"]}>
                 <p className={styles["ticket__info"]}>На фильм:<span> </span>
                     <span className={styles["ticket__details"] + " " + styles["ticket__title"]}>
@@ -39,6 +38,11 @@ export function Payed() {
                 <p className={styles["ticket__info"]}>Начало сеанса:<span> </span>
                         <span className={styles["ticket__details"] + " " + styles["ticket__start"]}>
                             {ticket?.bookedPlaces[0].movieShow.start}
+                        </span>
+                </p>
+                <p className={styles["ticket__info"]}>Дата сеанса:<span> </span>
+                    <span className={styles["ticket__details"] + " " + styles["ticket__start"]}>
+                            {dateISOStrToRuFormat(ticket?.bookedPlaces[0].seanceDate as string)}
                         </span>
                 </p>
                 {/*параметр size принимается только в px, хотя по факту в rem тоже работает*/}

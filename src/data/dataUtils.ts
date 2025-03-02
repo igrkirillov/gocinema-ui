@@ -81,3 +81,8 @@ export function dateToISOFormat(dateTime: number) {
     date.setTime(dateTime);
     return `${date.getFullYear()}-${("0"+(date.getMonth()+1)).slice(-2)}-${("0"+date.getDate()).slice(-2)}`;
 }
+
+export function dateISOStrToRuFormat(isoDate: string) {
+    const parts = isoDate.split("-");
+    return `${parts[2]}.${parts[1]}.${parts[0]}`;
+}
