@@ -343,7 +343,7 @@ export async function getUserByLogin(user: User): Promise<User> {
 export async function getBookedPlaces(user: User, seanceId: number, seanceDate: string): Promise<BookedPlace[]> {
     const response = await fetch(config.serverUrl + "/booked-places?" +
         "movieShowId=" + seanceId + "&" +
-        "seanceDate=" + seanceDate, {
+        "date=" + seanceDate, {
         method: "GET",
         headers: {
             ...authHeader(user)
