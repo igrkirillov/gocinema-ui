@@ -3,7 +3,8 @@ import {useAppDispatch, useAppSelector} from "../../../hooks/storeHooks";
 import {buyingState, payTicket} from "../../../slices/buying";
 import {MouseEvent, useEffect} from "react";
 import {useNavigate} from "react-router";
-import {dateISOStrToRuFormat} from "../../../data/dataUtils";
+import {calcCost, dateISOStrToRuFormat, placeToUserStr} from "../../../data/dataUtils";
+import {BookedPlace} from "../../../types";
 export function Payment() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -32,7 +33,7 @@ export function Payment() {
                 </p>
                 <p className={styles["ticket__info"]}>Места:<span> </span>
                     <span className={styles["ticket__details"] + " " + styles["ticket__chairs"]}>
-                        {ticket?.bookedPlaces.map(p => p.hallPlace.row + "-" + p.hallPlace.col)
+                        {ticket?.bookedPlaces.map(p => placeToUserStr(p.hallPlace))
                             .reduce((s1, s2) => s1 + ", " + s2)}
                     </span></p>
                 <p className={styles["ticket__info"]}>В зале:<span> </span>
@@ -51,7 +52,7 @@ export function Payment() {
                 </p>
                 <p className={styles["ticket__info"]}>Стоимость:<span> </span>
                     <span className={styles["ticket__details"] + styles["ticket__cost"]}>
-                        {" " + ticket?.bookedPlaces[0].movieShow.id}
+                        {calcCost(ticket?.bookedPlaces as BookedPlace[])}
                     </span> рублей
                 </p>
 

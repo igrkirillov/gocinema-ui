@@ -1,10 +1,11 @@
 import {
+    BookedPlace,
     CurrentHallData,
     CurrentPricingData,
     CurrentTimelineData,
     Hall,
     Movie,
-    MovieData,
+    MovieData, Place,
     Seance,
     SeanceData,
     TimeData
@@ -76,13 +77,38 @@ export function getSixDays(date: number): number[] {
     return days;
 }
 
-export function dateToISOFormat(dateTime: number) {
+export function dateToISOFormat(dateTime: number): string {
+    if (!dateTime) {
+        return "";
+    }
     const date = new Date();
     date.setTime(dateTime);
     return `${date.getFullYear()}-${("0"+(date.getMonth()+1)).slice(-2)}-${("0"+date.getDate()).slice(-2)}`;
 }
 
-export function dateISOStrToRuFormat(isoDate: string) {
+export function dateISOStrToRuFormat(isoDate: string): string {
+    if (!isoDate) {
+        return "";
+    }
     const parts = isoDate.split("-");
     return `${parts[2]}.${parts[1]}.${parts[0]}`;
+}
+
+export function calcCost(bookedPlaces: BookedPlace[]) {
+    if (!bookedPlaces) {
+        return 0;
+    }
+    let cost = 0;
+    for (const bp of bookedPlaces) {
+        if (bp.hallPlace.isVip) {
+            cost += bp.movieShow.hall.vipPrice;
+        } else {
+            cost += bp.movieShow.hall.standardPrice;
+        }
+    }
+    return cost;
+}
+
+export function placeToUserStr(place: Place) {
+    return `${place.row+1}-${place.col+1}${place.isVip ? " (vip)" : ""}`;
 }

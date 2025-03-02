@@ -4,7 +4,7 @@ import {buyingState} from "../../../slices/buying";
 import {useEffect} from "react";
 import {useNavigate} from "react-router";
 import {QRCodeSVG} from 'qrcode.react';
-import {dateISOStrToRuFormat} from "../../../data/dataUtils";
+import {dateISOStrToRuFormat, placeToUserStr} from "../../../data/dataUtils";
 
 export function Payed() {
     const navigate = useNavigate();
@@ -28,7 +28,7 @@ export function Payed() {
                 </p>
                 <p className={styles["ticket__info"]}>Места:<span> </span>
                         <span className={styles["ticket__details"] + " " + styles["ticket__chairs"]}>
-                            {ticket?.bookedPlaces.map(p => p.hallPlace.row + "-" + p.hallPlace.col)
+                            {ticket?.bookedPlaces.map(p => placeToUserStr(p.hallPlace))
                                 .reduce((s1, s2) => s1 + ", " + s2)}
                         </span></p>
                 <p className={styles["ticket__info"]}>В зале:<span> </span>
