@@ -50,7 +50,8 @@ export type Place = {
 
 export type HallsState = ArrayDataState<Hall> & {
     currentHalls: CurrentHallData[],
-    currentPricings: CurrentPricingData[]
+    currentPricings: CurrentPricingData[],
+    errorPricing: string | null
 }
 
 export type HallParameters = {

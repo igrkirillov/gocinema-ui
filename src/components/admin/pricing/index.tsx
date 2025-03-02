@@ -8,7 +8,7 @@ import {CurrentPricing} from "../../../data/CurrentPricing";
 import {useCurrentPricing} from "../../../hooks/useCurrentPricing";
 
 export function Pricing() {
-    const {data: halls, error, currentPricings} = useAppSelector(hallsState);
+    const {data: halls, errorPricing: error, currentPricings} = useAppSelector(hallsState);
     const dispatch = useAppDispatch();
     const [currentPricing, setCurrentPricing] = useCurrentPricing(
         halls.length > 0 ? new CurrentPricing().fillFromHall(halls[0]) : new CurrentPricing());
@@ -57,7 +57,7 @@ export function Pricing() {
         }
     }
     const isButtonsEnabled = currentPricings.filter(h => h.id === currentPricing?.id).length != 0;
-    return error ? (<Error error={error}/>) : (
+    return (
         <>
             <p className={styles["conf-step__paragraph"]}>Выберите зал для конфигурации:</p>
             <ul className={styles["conf-step__selectors-box"]}>
@@ -89,6 +89,7 @@ export function Pricing() {
                 за <span className={styles["conf-step__chair"] + " " + styles["conf-step__chair_vip"]}></span> VIP кресла
             </div>
             <fieldset className={styles["conf-step__buttons"] + " " + styles["text-center"]}>
+                {error ? (<Error error={error}/>) : null}
                 <button className={styles["conf-step__button"] + " " + styles["conf-step__button-regular"]}
                     disabled={!isButtonsEnabled}
                     onClick={onCancelClick}>Отмена</button>

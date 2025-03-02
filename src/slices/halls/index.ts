@@ -170,7 +170,7 @@ export const hallsSlice = createSliceWithThunk({
             {
                 pending: (state) => {
                     state.loading = true;
-                    state.error = null;
+                    state.errorPricing = null;
                 },
                 fulfilled: (state, action: PayloadAction<Hall>) => {
                     const currentHallIndex = state.currentPricings.findIndex(h => h.id === action.payload.id);
@@ -179,7 +179,7 @@ export const hallsSlice = createSliceWithThunk({
                     state.data[hallIndex] = action.payload;
                 },
                 rejected: (state, action) => {
-                    state.error = action.payload as string;
+                    state.errorPricing = action.payload as string;
                 },
                 settled: (state) => {
                     state.loading = false;

@@ -435,9 +435,11 @@ export async function makePayTicket(user: User, ticket: Ticket): Promise<Ticket>
 }
 
 function getErrorMessage(r: Response) {
-    if (r.status == 401) {
+    if (r.status === 400) {
+        return "Неверные параметры запроса!"
+    } else if (r.status === 401) {
         return "Неправильный логин или пароль!"
-    } else if (r.status == 403) {
+    } else if (r.status === 403) {
         return "Нет прав!"
     } else if (!r.statusText){
         return r.statusText;

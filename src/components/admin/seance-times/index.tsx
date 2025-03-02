@@ -2,7 +2,7 @@ import styles from "../css/styles.module.scss"
 import "../css/normalize.css"
 import {MouseEvent, useEffect, useState} from "react";
 import {MoviePopup} from "../movie-popup";
-import {Movie, MovieData, SeanceData} from "../../../types";
+import {Hall, Movie, MovieData, SeanceData} from "../../../types";
 import {useAppDispatch, useAppSelector} from "../../../hooks/storeHooks";
 import {fetchMovies, moviesState, saveMovie} from "../../../slices/movies";
 import {formatTime, toMovieData, toSeanceData} from "../../../data/dataUtils";
@@ -73,11 +73,13 @@ export function SeanceTimes() {
         setCurrentSeance(seance);
         setActiveSeancePopup(true);
     }
-    const onNewSeanceClick = (): void => {
+    const onNewSeanceClick = (hall: Hall): void => {
         if (!validateEditAndNotice(isEditAvailable)) {
             return;
         }
-        setCurrentSeance(toSeanceData(null));
+        const seanceData = toSeanceData(null);
+        seanceData.hall = hall;
+        setCurrentSeance(seanceData);
         setActiveSeancePopup(true);
     }
     const onSaveClick = ():void => {
@@ -125,7 +127,7 @@ export function SeanceTimes() {
                             <div className={styles["conf-step__seances-timeline"]}
                                 onClick={(event: MouseEvent<HTMLDivElement>) => {
                                         event.preventDefault();
-                                        onNewSeanceClick();
+                                        onNewSeanceClick(h);
                                     }
                             }>
                                 {new CurrentTimeline().fillFromData(currentTimeline).getActualSeances()
