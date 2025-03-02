@@ -29,7 +29,6 @@ export const buyingSlice = createSliceWithThunk({
         loadBuying: create.asyncThunk<{bookedPlaces: BookedPlace[], seance: Seance, seanceDate: string}, {seanceId: number, seanceDate: string}>(
             async  ({seanceId, seanceDate}, thunkApi) => {
                 try {
-                    console.log("seanceDate " + seanceDate)
                     const currentUser = getCurrentUser(thunkApi.getState());
                     return {
                         bookedPlaces: await getBookedPlaces(currentUser, seanceId, seanceDate),
