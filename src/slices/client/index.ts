@@ -28,7 +28,7 @@ export const clientSlice = createSliceWithThunk({
                     .sort((h1, h2) => h1.name.localeCompare(h2.name));
                 const timesMap = {} as DayTimes;
                 for (const hall of halls) {
-                    timesMap[hall.id] = data.filter(s => s.movie.id === m.id && s.hall.id === s.hall.id);
+                    timesMap[hall.id] = data.filter(s => s.movie.id === m.id && s.hall.id === hall.id);
                 }
                 return {
                     movie: m,
