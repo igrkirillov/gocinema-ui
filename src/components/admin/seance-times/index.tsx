@@ -5,7 +5,6 @@ import {MoviePopup} from "../movie-popup";
 import {Movie, MovieData, SeanceData} from "../../../types";
 import {useAppDispatch, useAppSelector} from "../../../hooks/storeHooks";
 import {fetchMovies, moviesState, saveMovie} from "../../../slices/movies";
-import moviePoster from "../../../assets/poster.png"
 import {formatTime, toMovieData, toSeanceData} from "../../../data/dataUtils";
 import {MINUTE_TO_PX} from "../../../constants";
 import {fetchSeances, saveCurrentTimeline, seancesState, setCurrentTimeline} from "../../../slices/seances";
@@ -15,6 +14,7 @@ import {SeancePopup} from "../seance-popup";
 import {CurrentTimeline} from "../../../data/CurrentTimeline";
 import {useEditAvailable} from "../../../hooks/useEditAvailable";
 import {validateEditAndNotice} from "../../../noticeUtils";
+import {getFullPosterUrl} from "../../../posterUtils";
 
 export function SeanceTimes() {
     const isEditAvailable = useEditAvailable();
@@ -111,7 +111,7 @@ export function SeanceTimes() {
                 {movies.map(m => (
                     <div id={"Movie-" + m.id} key={m.id} data-id={m.id} className={styles["conf-step__movie"]}
                          onClick={() => onMovieClick(m)} >
-                        <img className={styles["conf-step__movie-poster"]} alt="poster" src={moviePoster}></img>
+                        <img className={styles["conf-step__movie-poster"]} alt="poster" src={`${getFullPosterUrl(m.posterUrl)}`}></img>
                         <h3 className={styles["conf-step__movie-title"]}>{m.name}</h3>
                         <p className={styles["conf-step__movie-duration"]}>{m.duration} минут</p>
                     </div>

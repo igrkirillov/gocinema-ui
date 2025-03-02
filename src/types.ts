@@ -6,7 +6,8 @@ export type Movie = {
     description: string,
     country: string,
     releaseDate: string,
-    duration: number
+    duration: number,
+    posterUrl: string
 }
 
 type ArrayDataState<T> = LoadingState & {
@@ -99,7 +100,9 @@ export type MovieData = {
     name: string,
     description: string,
     country: string,
-    duration: number
+    duration: number,
+    posterUrl: string | null
+    posterFile: File | null
 }
 
 export type MovieParameters = {

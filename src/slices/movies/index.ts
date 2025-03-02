@@ -1,6 +1,6 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Movie, MovieData, MoviesState} from "../../types";
-import {getMovies, patchMovie, saveNewMovie} from "../../serverApi";
+import {getMovie, getMovies, patchMovie, saveMoviePoster, saveNewMovie} from "../../serverApi";
 import {getCurrentUser} from "../../store/storeUtils";
 
 const createSliceWithThunk = buildCreateSlice({
@@ -48,12 +48,19 @@ export const moviesSlice = createSliceWithThunk({
             async  (movieData, thunkApi) => {
                 try {
                     const currentUser = getCurrentUser(thunkApi.getState());
+                    let movie;
                     if (!movieData.id) {
-                        return await saveNewMovie(currentUser, movieData);
+                        movie = await saveNewMovie(currentUser, movieData);
                     } else {
                         await patchMovie(currentUser, movieData);
-                        return (await getMovies(currentUser)).find(m => m.id === movieData.id) as Movie;
+                        movie = await getMovie(currentUser, movieData.id);
                     }
+                    // если выбран файл постера, значит надо его загрузить на сервер
+                    if (movieData.posterFile) {
+                        await saveMoviePoster(currentUser, movie.id, movieData.posterFile);
+                        movie = await getMovie(currentUser, movie.id);
+                    }
+                    return movie;
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
                 }

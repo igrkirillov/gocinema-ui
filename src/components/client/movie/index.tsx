@@ -1,9 +1,9 @@
 import styles from "../css/styles.module.scss"
-import poster from "./poster1.jpg"
 import {DayItem} from "../../../types";
 import {MouseEvent} from "react";
 import {useNavigate} from "react-router";
 import {dateToISOFormat} from "../../../data/dataUtils";
+import {getFullPosterUrl} from "../../../posterUtils";
 
 export type MovieProps = {
     dayItem: DayItem,
@@ -22,7 +22,7 @@ export function Movie(props: MovieProps) {
         <section className={styles["movie"]}>
             <div className={styles["movie__info"]}>
                 <div className={styles["movie__poster"]}>
-                    <img className={styles["movie__poster-image"]} alt={movie.name} src={poster}></img>
+                    <img className={styles["movie__poster-image"]} alt={movie.name} src={`${getFullPosterUrl(movie.posterUrl)}`}></img>
                 </div>
                 <div className={styles["movie__description"]}>
                     <h2 className={styles["movie__title"]}>{movie.name}</h2>

@@ -177,6 +177,23 @@ export async function patchMovie(user: User, movieData: MovieData): Promise<void
     }
 }
 
+export async function saveMoviePoster(user: User, id: number, file: File): Promise<void> {
+    const response = await fetch(config.serverUrl + `/movies/${id}/poster?fileName=${file.name}`,
+        {
+            method: "POST",
+            body: file,
+            headers: {
+                'Content-Type': `${file.type}`,
+                'Content-Length': `${file.size}`,
+                ...authHeader(user)
+            },
+        });
+    if (!response.ok) {
+        console.log(response)
+        throw Error(getErrorMessage(response));
+    }
+}
+
 export async function getMovies(user: User): Promise<Movie[]> {
     const response = await fetch(config.serverUrl + "/movies", {
         method: "GET",
@@ -186,6 +203,21 @@ export async function getMovies(user: User): Promise<Movie[]> {
     });
     if (response.ok) {
         return await response.json() as Movie[];
+    } else {
+        console.log(response)
+        throw Error(getErrorMessage(response));
+    }
+}
+
+export async function getMovie(user: User, id: number): Promise<Movie> {
+    const response = await fetch(config.serverUrl + `/movies/${id}`, {
+        method: "GET",
+        headers: {
+            ...authHeader(user)
+        }
+    });
+    if (response.ok) {
+        return await response.json() as Movie;
     } else {
         console.log(response)
         throw Error(getErrorMessage(response));

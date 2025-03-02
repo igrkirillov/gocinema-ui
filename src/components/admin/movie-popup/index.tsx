@@ -1,7 +1,7 @@
 import styles from "../css/styles.module.scss";
 import popupClose from "../../../assets/close.png";
 import {MovieData} from "../../../types";
-import {FormEvent, MouseEvent, useEffect, useRef} from "react";
+import {ChangeEvent, FormEvent, MouseEvent, useEffect, useRef, useState} from "react";
 
 export function MoviePopup(props: {
     data: MovieData,
@@ -16,6 +16,7 @@ export function MoviePopup(props: {
         data.description = formData.get("description") as string;
         data.country = formData.get("country") as string;
         data.duration = Number(formData.get("duration"));
+        data.posterFile = posterFile;
         saveCallback(data);
         event.currentTarget.reset();
     }
@@ -31,6 +32,15 @@ export function MoviePopup(props: {
     useEffect(() => {
         inputNameRef.current?.focus();
     })
+    const [posterFile, setPosterFile] = useState(data.posterFile);
+    const posterFileRef = useRef<HTMLInputElement>(null);
+    const onPosterClick = (event: MouseEvent<HTMLInputElement>) => {
+        event.preventDefault();
+        posterFileRef.current?.click();
+    }
+    const onPosterFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setPosterFile(event.currentTarget.files ? event.currentTarget.files[0] : null);
+    }
     return (
         <div className={styles["popup"] + " " + (isActive ? styles["active"] : "")}>
             <div className={styles["popup__container"]}>
@@ -72,13 +82,18 @@ export function MoviePopup(props: {
                                         <input className={styles["conf-step__input"]} type="text" name="country"
                                                defaultValue={data.country}></input>
                                     </label>
+                                    <label style={{"width": "0", "height": "0"}}>
+                                        <input type="file" ref={posterFileRef} style={{"width": "0", "height": "0"}} accept="image/*"
+                                               onChange={onPosterFileChange}/>
+                                    </label>
                                 </div>
                             </div>
                             <div className={styles["conf-step__buttons"] + " " + styles["text-center"]}>
                                 <input type="submit" value={data.id ? "Сохранить фильм" : "Добавить фильм"}
                                        className={styles["conf-step__button"] + " " + styles["conf-step__button-accent"]} data-event="film_add"></input>
-                                <input type="submit" value="Загрузить постер"
-                                       className={styles["conf-step__button"] + " " + styles["conf-step__button-accent"]}></input>
+                                <input type="submit" value={posterFile ? "Постер выбран" : "Выбрать постер"}
+                                       className={styles["conf-step__button"] + " " + styles["conf-step__button-accent"]}
+                                        onClick={onPosterClick}></input>
                                 <button className={styles["conf-step__button"] + " " +styles["conf-step__button-regular"]} type="button"
                                         onClick={onCancelButtonClick}>Отменить</button>
                             </div>
