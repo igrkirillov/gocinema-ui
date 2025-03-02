@@ -3,7 +3,6 @@ import {Navigate, Route, Routes} from "react-router";
 import {Admin} from "./pages/admin";
 import {Client} from "./pages/client";
 import {MovieSelection} from "./components/client/movieSelection";
-import {Booking} from "./components/client/booking";
 import {AuthContext} from "./context/AuthContext";
 import Login from "./pages/login/login";
 import {User} from "./types";

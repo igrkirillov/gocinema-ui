@@ -8,11 +8,14 @@ import {
     HallParameters,
     Movie,
     MovieData,
-    MovieParameters, PaymentTicketParameters, Place,
+    MovieParameters,
+    PaymentTicketParameters,
+    Place,
     PlaceParameters,
     Seance,
     SeanceData,
-    SeanceParameters, SeancePlace, Ticket,
+    SeanceParameters,
+    Ticket,
     User
 } from "./types";
 import {formatTime} from "./data/dataUtils";
@@ -382,7 +385,7 @@ export async function getBookedPlaces(user: User, seanceId: number, seanceDate: 
         }
     });
     if (response.ok) {
-        return await response.json() as SeancePlace[];
+        return await response.json() as BookedPlace[];
     } else {
         console.log(response)
         throw Error(getErrorMessage(response));

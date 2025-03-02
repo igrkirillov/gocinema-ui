@@ -20,16 +20,16 @@ export const clientSlice = createSliceWithThunk({
     initialState,
     selectors: {
         clientState: (state) => state,
-        dayItems: createSelector((state: ClientState) => state.data, (data: Seance[]): DayItem[] => {
-            const movieIds = [...new Set(data.map(s => s.movie.id))];
-            const movies = movieIds.map(id => data.find(s => s.movie.id === id)?.movie);
+        dayItems: createSelector((state: ClientState) => state.data, (seances: Seance[]): DayItem[] => {
+            const movieIds = [...new Set(seances.map(s => s.movie.id))];
+            const movies = movieIds.map(id => (seances.find(s => s.movie.id === id) as Seance).movie);
             return movies.sort((m1, m2) => m1.name.localeCompare(m2.name)).map(m => {
-                const hallIds = [...new Set(data.filter(s => s.movie.id === m.id).map(s => s.hall.id))];
-                const halls = hallIds.map(id => data.find(s => s.hall.id === id)?.hall)
+                const hallIds = [...new Set(seances.filter(s => s.movie.id === m.id).map(s => s.hall.id))];
+                const halls = hallIds.map(id => (seances.find(s => s.hall.id === id) as Seance).hall)
                     .sort((h1, h2) => h1.name.localeCompare(h2.name));
                 const timesMap = {} as DayTimes;
                 for (const hall of halls) {
-                    timesMap[hall.id] = data.filter(s => s.movie.id === m.id && s.hall.id === hall.id);
+                    timesMap[hall.id] = seances.filter(s => s.movie.id === m.id && s.hall.id === hall.id);
                 }
                 return {
                     movie: m,
@@ -41,7 +41,7 @@ export const clientSlice = createSliceWithThunk({
     },
     reducers: (create) => ({
         fetchDaySeances: create.asyncThunk<Seance[], number>(
-            async  (currentDate, thunkApi) => {
+            async  (__, thunkApi) => {
                 try {
                     const currentUser = getCurrentUser(thunkApi.getState());
                     const isSaleOpened = await getOption(currentUser, IS_SALE_OPENED_OPTION) === "true";

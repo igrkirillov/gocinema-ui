@@ -27,9 +27,9 @@ export function SeanceTimes() {
         dispatch(fetchMovies());
         dispatch(fetchSeances());
     }, []);
-    const {data: movies, error: moviesError} = useAppSelector(moviesState);
+    const {data: movies} = useAppSelector(moviesState);
     const {data: seances, currentTimeline, error: seancesError} = useAppSelector(seancesState);
-    const {data: halls, error: hallsError} = useAppSelector(hallsState);
+    const {data: halls} = useAppSelector(hallsState);
     useEffect(() => {
         dispatch(setCurrentTimeline(new CurrentTimeline().fillFromSeances(seances).serialize()));
     }, [seances])

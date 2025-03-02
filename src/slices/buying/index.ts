@@ -71,9 +71,9 @@ export const buyingSlice = createSliceWithThunk({
             async  (__, thunkApi) => {
                 try {
                     const currentUser = getCurrentUser(thunkApi.getState());
-                    const orderPlaces = (thunkApi.getState()["buying"] as BuyingState).orderPlaces;
-                    const seanceDate = (thunkApi.getState()["buying"] as BuyingState).seanceDate;
-                    const seance = (thunkApi.getState()["buying"] as BuyingState).seance;
+                    const orderPlaces = ((thunkApi.getState() as {[key: string]: {}})["buying"] as BuyingState).orderPlaces;
+                    const seanceDate = ((thunkApi.getState() as {[key: string]: {}})["buying"] as BuyingState).seanceDate;
+                    const seance = ((thunkApi.getState() as {[key: string]: {}})["buying"] as BuyingState).seance;
                     return await makeBookTicket(currentUser, orderPlaces, seanceDate, seance as Seance);
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
@@ -99,7 +99,7 @@ export const buyingSlice = createSliceWithThunk({
             async  (__, thunkApi) => {
                 try {
                     const currentUser = getCurrentUser(thunkApi.getState());
-                    const bookedTicket = (thunkApi.getState()["buying"] as BuyingState).bookedTicket as Ticket;
+                    const bookedTicket = ((thunkApi.getState() as {[key: string]: {}})["buying"] as BuyingState).bookedTicket as Ticket;
                     return await makePayTicket(currentUser, bookedTicket);
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);

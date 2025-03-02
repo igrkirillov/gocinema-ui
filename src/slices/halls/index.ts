@@ -117,7 +117,7 @@ export const hallsSlice = createSliceWithThunk({
                     // @ts-ignore
                     const currentUser = getCurrentUser(thunkApi.getState());
                     await patchHall(currentUser, currentHall, getHallByIdOrThrow(currentHall.id,
-                        (thunkApi.getState()["halls"] as HallsState).data));
+                        ((thunkApi.getState() as {[key: string]: {}})["halls"] as HallsState).data));
                     return getHallByIdOrThrow(currentHall.id, await getHalls(currentUser));
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
@@ -160,7 +160,7 @@ export const hallsSlice = createSliceWithThunk({
                 try {
                     // @ts-ignore
                     const currentUser = getCurrentUser(thunkApi.getState());
-                    const hall = getHallByIdOrThrow(currentPricing.id, (thunkApi.getState()["halls"] as HallsState).data);
+                    const hall = getHallByIdOrThrow(currentPricing.id, ((thunkApi.getState() as {[key: string]: {}})["halls"] as HallsState).data);
                     await savePricing(currentUser, currentPricing, hall);
                     return getHallByIdOrThrow(currentPricing.id, await getHalls(currentUser));
                 } catch (e) {

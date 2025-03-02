@@ -14,7 +14,7 @@ export function Buying() {
         dispatch(loadBuying({seanceId: seanceId, seanceDate: seanceDate}));
     }, [seanceId]);
     const navigate = useNavigate();
-    const {seance, orderPlaces, data: bookedPlaces, error, loading, bookedTicket} = useAppSelector(buyingState);
+    const {seance, orderPlaces, data: bookedPlaces, loading, bookedTicket} = useAppSelector(buyingState);
     const places = seance ? seance.hall.places : [];
     useEffect(() => {
         // если билет есть и он не оплачен, тогда перейти на форму оплаты
