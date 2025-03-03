@@ -110,5 +110,5 @@ export function calcCost(bookedPlaces: BookedPlace[]) {
 }
 
 export function placeToUserStr(place: Place) {
-    return `${place.row+1}-${place.col+1}${place.isVip ? " (vip)" : ""}`;
+    return `${place.row+1}-${place.col+1}${place.isVip ? "(vip)" : ""}`;
 }
