@@ -1,3 +1,5 @@
+@use "sass:color";
+
 $font-stack: 'Roboto', sans-serif;
 
 $lilac: #63536C;
@@ -10,7 +12,7 @@ $grey: #848484;
 $lightgrey: #EAE9EB;
 $startyellow: #FFEB85;
 $colors: 10;
-$degrees: 360 / $colors;
+$degrees: calc(360 / $colors);
 
 $colwidth: 42px;
 $gapwidth: 20px;
@@ -566,10 +568,10 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
     &:nth-of-type(n + 4) {
       margin-top: 15px;
     }
-    
+
     @for $i from 1 to $colors {
       &:nth-of-type(#{$i}) {
-        background-color:adjust-hue($startyellow, $i * $degrees);
+        background-color: color.adjust($startyellow, $hue: $i * $degrees);
       }
     }    
     
