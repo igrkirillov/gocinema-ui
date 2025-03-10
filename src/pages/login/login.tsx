@@ -6,14 +6,15 @@ import styles from "../../components/admin/css/styles.module.scss";
 import {FormEvent, useEffect} from "react";
 import {User} from "../../types";
 import {ROLE_ADMIN} from "../../constants";
-import {useAppSelector} from "../../hooks/storeHooks";
-import {authState} from "../../slices/auth";
+import {useAppDispatch, useAppSelector} from "../../hooks/storeHooks";
+import {authState, tryAuthFromLocalStorage} from "../../slices/auth";
 
 const Login = () => {
     const { user, login } = useAuth();
     const {error, loading} = useAppSelector(authState);
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const onSubmitForm = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -31,6 +32,10 @@ const Login = () => {
             navigate("/" + searchParams.get("backUrl"));
         }
     }, [user]);
+    useEffect(() => {
+        // пробуем залогиниться из localStorage один раз при маунте компонента
+        dispatch(tryAuthFromLocalStorage());
+    }, []);
     return (
         <>
             <Header></Header>

@@ -54,11 +54,14 @@ export type HallsState = ArrayDataState<Hall> & {
     errorPricing: string | null
 }
 
-export type HallParameters = {
+export type HallConfigurationParameters = {
     name: string,
     rows: number,
     cols: number,
-    places: PlaceParameters[],
+    places: PlaceParameters[]
+}
+
+export type HallPricesParameters = {
     standardPrice: number,
     vipPrice: number
 }

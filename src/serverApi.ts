@@ -5,7 +5,7 @@ import {
     CurrentHallData,
     CurrentPricingData,
     Hall,
-    HallParameters,
+    HallConfigurationParameters, HallPricesParameters,
     Movie,
     MovieData,
     MovieParameters,
@@ -62,7 +62,7 @@ export async function createNewHall(user: User, hall: Hall): Promise<Hall> {
                             row: p.row,
                             col: p.col
                         } as PlaceParameters;
-                    })} as HallParameters),
+                    })} as HallConfigurationParameters),
                 headers: {
                     'Content-Type': 'application/json',
                     ...authHeader(user)
@@ -78,8 +78,8 @@ export async function createNewHall(user: User, hall: Hall): Promise<Hall> {
 
 
 
-export async function patchHall(user: User, currentHall: CurrentHallData, hall: Hall): Promise<void> {
-    const response = await fetch(config.serverUrl + "/halls/" + currentHall.id,
+export async function patchHallConfiguration(user: User, currentHall: CurrentHallData): Promise<void> {
+    const response = await fetch(config.serverUrl + `/halls/${currentHall.id}/configuration`,
         {
             method: "PATCH",
             body: JSON.stringify({
@@ -93,9 +93,7 @@ export async function patchHall(user: User, currentHall: CurrentHallData, hall: 
                         isVip: p.isVip,
                         isBlocked: p.isBlocked
                     } as PlaceParameters
-                }),
-                standardPrice: hall.standardPrice,
-                vipPrice: hall.vipPrice} as HallParameters),
+                })} as HallConfigurationParameters),
             headers: {
                 'Content-Type': 'application/json',
                 ...authHeader(user)
@@ -107,24 +105,13 @@ export async function patchHall(user: User, currentHall: CurrentHallData, hall: 
     }
 }
 
-export async function savePricing(user: User, currentPricing: CurrentPricingData, hall: Hall): Promise<void> {
-    const response = await fetch(config.serverUrl + "/halls/" + currentPricing.id,
+export async function savePricing(user: User, currentPricing: CurrentPricingData): Promise<void> {
+    const response = await fetch(config.serverUrl + `/halls/${currentPricing.id}/prices`,
         {
             method: "PATCH",
             body: JSON.stringify({
-                name: hall.name,
-                cols: hall.cols,
-                rows: hall.rows,
-                places: hall.places?.map(p => {
-                    return {
-                        row: p.row,
-                        col: p.col,
-                        isVip: p.isVip,
-                        isBlocked: p.isBlocked
-                    } as PlaceParameters
-                }),
                 standardPrice: currentPricing.standardPrice,
-                vipPrice: currentPricing.vipPrice} as HallParameters),
+                vipPrice: currentPricing.vipPrice} as HallPricesParameters),
             headers: {
                 'Content-Type': 'application/json',
                 ...authHeader(user)

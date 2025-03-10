@@ -1,6 +1,6 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
 import {CurrentHallData, CurrentPricingData, Hall, HallsState} from "../../types";
-import {deleteHallById, getHalls, patchHall, savePricing, createNewHall} from "../../serverApi";
+import {deleteHallById, getHalls, patchHallConfiguration, savePricing, createNewHall} from "../../serverApi";
 import {getHallByIdOrThrow} from "../../data/dataUtils";
 import {getCurrentUser} from "../../store/storeUtils";
 
@@ -13,7 +13,8 @@ const initialState = {
     loading: false,
     error: null,
     currentHalls: [],
-    currentPricings: []
+    currentPricings: [],
+    errorPricing: null
 } as HallsState;
 
 export const hallsSlice = createSliceWithThunk({
@@ -114,10 +115,8 @@ export const hallsSlice = createSliceWithThunk({
         saveCurrentHall: create.asyncThunk<Hall, CurrentHallData>(
             async  (currentHall, thunkApi) => {
                 try {
-                    // @ts-ignore
                     const currentUser = getCurrentUser(thunkApi.getState());
-                    await patchHall(currentUser, currentHall, getHallByIdOrThrow(currentHall.id,
-                        ((thunkApi.getState() as {[key: string]: {}})["halls"] as HallsState).data));
+                    await patchHallConfiguration(currentUser, currentHall);
                     return getHallByIdOrThrow(currentHall.id, await getHalls(currentUser));
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
@@ -160,8 +159,7 @@ export const hallsSlice = createSliceWithThunk({
                 try {
                     // @ts-ignore
                     const currentUser = getCurrentUser(thunkApi.getState());
-                    const hall = getHallByIdOrThrow(currentPricing.id, ((thunkApi.getState() as {[key: string]: {}})["halls"] as HallsState).data);
-                    await savePricing(currentUser, currentPricing, hall);
+                    await savePricing(currentUser, currentPricing);
                     return getHallByIdOrThrow(currentPricing.id, await getHalls(currentUser));
                 } catch (e) {
                     return thunkApi.rejectWithValue((e as Error).message);
