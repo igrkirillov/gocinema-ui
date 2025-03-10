@@ -1,7 +1,7 @@
 import styles from "../css/styles.module.scss";
 import popupClose from "../../../assets/close.png";
 import {Hall, Movie, SeanceData} from "../../../types";
-import {FormEvent, MouseEvent, useEffect, useRef} from "react";
+import {FormEvent, MouseEvent, useEffect, useRef, useState} from "react";
 import {useAppSelector} from "../../../hooks/storeHooks";
 import {moviesState} from "../../../slices/movies";
 import {hallsState} from "../../../slices/halls";
@@ -17,14 +17,18 @@ export function SeancePopup(props: {
     const {data, isActive, saveCallback, cancelCallback, deleteCallback} = props;
     const {data: movies} = useAppSelector(moviesState)
     const {data: halls} = useAppSelector(hallsState)
+    const [validationError, setValidationError] = useState("");
     const onSubmitForm = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        console.log(data)
         data.hall = halls.find(h => h.id == Number(formData.get("hall"))) as Hall;
         data.movie = movies.find(m => m.id == Number(formData.get("movie"))) as Movie;
         data.start = new Time().fillFromString(formData.get("start") as string).serialize();
-        saveCallback(data);
+        try {
+            saveCallback(data);
+        } catch (e) {
+            setValidationError((e as Error).message);
+        }
         event.currentTarget.reset();
     }
     const onCancelButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
@@ -65,23 +69,29 @@ export function SeancePopup(props: {
                                         Зал
                                         <select className={styles["conf-step__input"]} name="hall" required
                                                 defaultValue={data?.hall?.id}
-                                                ref={selectMoviesRef}>
+                                                ref={selectMoviesRef}
+                                                onChange={() => {setValidationError("")}}>
                                             {halls.map(h => (<option key={h.id} value={h.id}>{h.name}</option>))}
                                         </select>
                                     </label>
                                     <label className={styles["conf-step__label"] +" "+ styles["conf-step__label-fullsize"]} htmlFor="duration">
                                         Фильм
                                         <select className={styles["conf-step__input"]} name="movie" required
-                                                defaultValue={data?.movie?.id}>
+                                                defaultValue={data?.movie?.id}
+                                                onChange={() => {setValidationError("")}}>
                                             {movies.map(m => (<option key={m.id} value={m.id}>{m.name}</option>))}
                                         </select>
                                     </label>
                                     <label className={styles["conf-step__label"] + " " + styles["conf-step__label-fullsize"]} htmlFor="country">
                                         Время начала
                                         <input className={styles["conf-step__input"]} type="time" name="start"
-                                               required defaultValue={formatTime(data.start)}></input>
+                                               required defaultValue={formatTime(data.start)}
+                                               onChange={() => {setValidationError("")}}></input>
                                     </label>
                                 </div>
+                            </div>
+                            <div className={styles["text-center"]}>
+                                {validationError ? (<span className={styles["login__input"]} style={{"color": "red", "border": "0px"}}>{validationError}</span>) : null}
                             </div>
                             <div className={styles["conf-step__buttons"] + " " + styles["text-center"]}>
                                 <input type="submit" value={data.id ? "Сохранить фильм" : "Добавить фильм"}

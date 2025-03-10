@@ -49,7 +49,10 @@ export function SeanceTimes() {
         setActiveMoviePopup(false);
     }
     const saveSeanceCallback = (data: SeanceData): void => {
-        dispatch(setCurrentTimeline(new CurrentTimeline().fillFromData(currentTimeline).addChange(data).serialize()));
+        // проверка консистентности сетки сеансов перед сохранением
+        const timeLine = new CurrentTimeline().fillFromData(currentTimeline).addChange(data);
+        timeLine.checkConsistency();
+        dispatch(setCurrentTimeline(timeLine.serialize()));
         setActiveSeancePopup(false);
     }
     const deleteSeanceCallback = (data: SeanceData): void => {
